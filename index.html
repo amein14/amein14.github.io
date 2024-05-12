@@ -83,7 +83,7 @@
             const price = document.getElementById("price").value;
             const currentDate = new Date();
             const formattedDate = formatDateString(currentDate);
-            const message = `${formattedDate}%0A${notes}: RM${price}`;
+            const message = `${formattedDate}\n${notes}: RM${price}`;
             const encodedMessage = encodeURIComponent(message);
             const whatsappLink = `whatsapp://send?text=${encodedMessage}`;
             window.location.href = whatsappLink;
