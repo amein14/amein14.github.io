@@ -80,6 +80,8 @@
             const encodedMessage = encodeURIComponent(message);
             const whatsappLink = `whatsapp://send?text=${encodedMessage}`;
             window.location.href = whatsappLink;
+	    document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
         }
     </script>
 </body>
