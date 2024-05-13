@@ -79,14 +79,26 @@
             return `${day}/${month}/${year}`;
         }
         function generateLink() {
-            const notes = toTitleCase(document.getElementById("notes").value);
-			const pricesInput = document.getElementById("price").value;
-            const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim())); // Split by comma and convert to array of numbers
-            const totalPrice = pricesArray.reduce((sum, price) => sum + price, 0); // Calculate total sum
+			const notesInput = document.getElementById("notes").value;
+            const pricesInput = document.getElementById("price").value;
+
+            const notesArray = notesInput.split(',').map(note => toTitleCase(note.trim()));
+            const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+            let message = "";
+            let total = 0;
             const currentDate = new Date();
             const formattedDate = formatDateString(currentDate);
-            const message = `${formattedDate}\n${notes}: RM${totalPrice.toFixed(2)}`;
-            const encodedMessage = encodeURIComponent(message);
+
+            for (let i = 0; i < notesArray.length; i++) {
+                message += `${notesArray[i]}: RM${pricesArray[i].toFixed(2)}\n`;
+                total += pricesArray[i];
+            }
+
+            message += `Total: RM${total.toFixed(2)}`;
+
+            const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
+
             const whatsappLink = `https://wa.me/?text=${encodedMessage}`;
             window.location.href = whatsappLink;
 			
