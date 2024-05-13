@@ -103,7 +103,7 @@
 
             const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
 
-            const whatsappLink = `https://wa.me/?text=${encodedMessage}`;
+            const whatsappLink = `whatsapp://wa.me/?text=${encodedMessage}`;
             window.location.href = whatsappLink;
 			
 	    document.getElementById("notes").value = "";
