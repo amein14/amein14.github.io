@@ -91,14 +91,14 @@
             const formattedDate = formatDateString(currentDate);
 
             if (notesArray.length === 1 && pricesArray.length === 1) {
-                message = `${notesArray[0]} : RM${pricesArray[0].toFixed(2)}`;
+                message = `RM${pricesArray[0].toFixed(2)} : ${notesArray[0]}`;
             } else {
                 for (let i = 0; i < notesArray.length; i++) {
-                    message += `${notesArray[i]}: RM${pricesArray[i].toFixed(2)}\n`;
+                    message += `RM${pricesArray[i].toFixed(2)} : ${notesArray[i]}\n`;
                     total += pricesArray[i];
                 }
 
-                message += `Total : RM${total.toFixed(2)}`;
+                message += `*RM${total.toFixed(2)}*`;
             }
 
             const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
