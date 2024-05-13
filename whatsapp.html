@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Expances</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+			display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 30px;
+            color: #333;
+        }
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="number"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #007bff;
+            color: #fff;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    
+    <form id="whatsappForm">
+	<h1>Share Expences</h1>
+        <label for="notes">Notes:</label>
+        <input type="text" id="notes" name="notes" required>
+
+        <label for="price">Price:</label>
+        <input type="text" id="price" name="price" required inputmode="decimal">
+
+        <button type="button" onclick="generateLink()">Share on WhatsApp</button>
+    </form>
+
+    <script>
+	    function toTitleCase(str) {
+            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+		function formatDateString(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+        function generateLink() {
+            const notes = toTitleCase(document.getElementById("notes").value);
+			const pricesInput = document.getElementById("price").value;
+            const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim())); // Split by comma and convert to array of numbers
+            const totalPrice = pricesArray.reduce((sum, price) => sum + price, 0); // Calculate total sum
+            const currentDate = new Date();
+            const formattedDate = formatDateString(currentDate);
+            const message = `${formattedDate}\n${notes}: RM${totalPrice.toFixed(2)}`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappLink = `https://wa.me/?text=${encodedMessage}`;
+            window.location.href = whatsappLink;
+			
+			document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
+        }
+    </script>
+</body>
+</html>
