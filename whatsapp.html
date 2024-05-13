@@ -79,7 +79,7 @@
             return `${day}/${month}/${year}`;
         }
         function generateLink() {
-			const notesInput = document.getElementById("notes").value;
+	    const notesInput = document.getElementById("notes").value;
             const pricesInput = document.getElementById("price").value;
 
             const notesArray = notesInput.split(',').map(note => toTitleCase(note.trim()));
@@ -90,19 +90,23 @@
             const currentDate = new Date();
             const formattedDate = formatDateString(currentDate);
 
-            for (let i = 0; i < notesArray.length; i++) {
-                message += `${notesArray[i]}: RM${pricesArray[i].toFixed(2)}\n`;
-                total += pricesArray[i];
-            }
+            if (notesArray.length === 1 && pricesArray.length === 1) {
+                message = `${notesArray[0]} : RM${pricesArray[0].toFixed(2)}`;
+            } else {
+                for (let i = 0; i < notesArray.length; i++) {
+                    message += `${notesArray[i]}: RM${pricesArray[i].toFixed(2)}%0A`;
+                    total += pricesArray[i];
+                }
 
-            message += `Total: RM${total.toFixed(2)}`;
+                message += `Total : RM${total.toFixed(2)}`;
+            }
 
             const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
 
             const whatsappLink = `https://wa.me/?text=${encodedMessage}`;
             window.location.href = whatsappLink;
 			
-			document.getElementById("notes").value = "";
+	    document.getElementById("notes").value = "";
             document.getElementById("price").value = "";
         }
     </script>
