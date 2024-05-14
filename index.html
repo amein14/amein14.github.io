@@ -48,7 +48,6 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
         }
         .whatsapp-button {
             cursor: pointer;
@@ -69,7 +68,7 @@
         <input type="text" id="price" name="price" required inputmode="decimal">
 
         <div class="bottom-row">
-            <div id="cashTracking">
+            <div id="cashTracking"style="visibility: hidden;">
                 <p>Balance: RM<span id="cashOnHand"></span></p>
             </div>
             <div class="whatsapp-button" onclick="generateLink()">
