@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Expenses2Whatsapp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMU3V37Xe0eaf2p5LbHGXRvCWmgeDhzL0/+ql" crossorigin="anonymous">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -35,8 +36,7 @@
             margin-bottom: 5px;
         }
         input[type="text"],
-        input[type="number"],
-        button {
+        input[type="number"]{
             width: 100%;
             padding: 10px;
             margin-bottom: 20px;
@@ -44,15 +44,17 @@
             border-radius: 5px;
             box-sizing: border-box;
         }
-        button {
-            background-color: #007bff;
-            color: #fff;
-            font-weight: bold;
-            border: none;
+        .bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .whatsapp-button {
             cursor: pointer;
         }
-        button:hover {
-            background-color: #0056b3;
+        .whatsapp-button i {
+            font-size: 2.5em; /* Adjust size as needed */
         }
     </style>
 </head>
@@ -66,7 +68,14 @@
         <label for="price">Price:</label>
         <input type="text" id="price" name="price" required inputmode="decimal">
 
-        <button type="button" onclick="generateLink()">Share on WhatsApp</button>
+        <div class="bottom-row">
+            <div id="cashTracking">
+                <p>Balance: RM<span id="cashOnHand"></span></p>
+            </div>
+            <div class="whatsapp-button" onclick="generateLink()">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+        </div>
     </form>
 
     <script>
