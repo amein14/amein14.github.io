@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses2Whatsapp</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        form {
+            width: 100%;
+            max-width: 400px;
+            background-color: #333;
+            padding: 20px;
+            box-sizing: border-box;
+            justify-content: space-between;
+        }
+        h1 {
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            background-color: #444;
+            color: #f5f5f5;
+            width: 100%;
+			max-width: 360px;
+        }
+        label {
+            margin-top: 20px;
+            margin-bottom: 5px;
+            color: #f5f5f5;
+        }
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 10px);
+            padding: 5px 0px;
+            margin-bottom: 20px;
+            border: none;
+            border-bottom: 1px solid #f5f5f5;
+            background: transparent;
+            color: #f5f5f5;
+            font-size: 16px;
+            outline: none;
+        }
+        .whatsapp-button {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            cursor: pointer;
+        }
+        .whatsapp-button i {
+            font-size: 40px;
+        }
+        .whatsapp-button:hover {
+            color: #25D366;
+        }
+        .info-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .info-container p {
+            margin: 0;
+            font-size: 16px;
+        }
+        input:focus::placeholder {
+            color: transparent;
+        }
+        input::placeholder {
+            color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <h1>Share Expenses</h1>
+    <form id="whatsappForm">
+        <label for="notes">Notes:</label>
+        <input type="text" placeholder="Separate with commas.." id="notes" name="notes" required>
+        <label for="price">Price:</label>
+        <input type="text" placeholder="Separate with commas.." id="price" name="price" required inputmode="decimal">
+        <div class="info-container">
+            <p>Balance: RM<span id="cashOnHand"></span></p>
+            <div class="whatsapp-button" onclick="generateLink()">
+                <i class="fab fa-whatsapp"></i>
+            </div>
+        </div>
+    </form>
+    <script>
+        function toTitleCase(str) {
+            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
+        function formatDateString(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function generateLink() {
+            const notesInput = document.getElementById("notes").value;
+            const pricesInput = document.getElementById("price").value;
+            const cashOnHandElem = document.getElementById("cashOnHand");
+            let cashOnHand = parseFloat(cashOnHandElem.innerText);
+
+            const notesArray = notesInput.split(',').map(note => toTitleCase(note.trim()));
+            const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+            let message = "";
+            let total = 0;
+            const currentDate = new Date();
+            const formattedDate = formatDateString(currentDate);
+
+            let cashOnly = true;
+            for (let i = 0; i < notesArray.length; i++) {
+                if (notesArray[i].toLowerCase() === 'cash') {
+                    cashOnHand += pricesArray[i];
+                } else {
+                    cashOnly = false;
+                    message += `${notesArray[i]}: RM${pricesArray[i].toFixed(2)}\n`;
+                    total += pricesArray[i];
+                }
+            }
+
+            if (!cashOnly && notesArray.length > 1) {
+                message += `Total: RM${total.toFixed(2)}`;
+            }
+
+            if (!cashOnly) {
+                cashOnHand -= total;
+            }
+
+            cashOnHandElem.innerText = cashOnHand.toFixed(2);
+            localStorage.setItem('cashOnHand', cashOnHand);
+
+            if (!cashOnly) {
+                const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
+                const whatsappLink = `https://wa.me/?text=${encodedMessage}`;
+                window.location.href = whatsappLink;
+            }
+
+            document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
+        }
+
+        window.onload = function() {
+            const cashOnHand = localStorage.getItem('cashOnHand');
+            if (cashOnHand !== null) {
+                document.getElementById("cashOnHand").innerText = parseFloat(cashOnHand).toFixed(2);
+            }
+        }
+    </script>
+</body>
+</html>
