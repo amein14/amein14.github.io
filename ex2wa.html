@@ -28,7 +28,6 @@
             background-color: #333;
             padding: 20px;
             box-sizing: border-box;
-            justify-content: space-between;
         }
         h1 {
             text-align: center;
@@ -131,13 +130,13 @@
                     cashOnHand += pricesArray[i];
                 } else {
                     cashOnly = false;
-                    message += `${notesArray[i]}: RM${pricesArray[i].toFixed(2)}\n`;
+                    message += `RM${pricesArray[i].toFixed(2)}: ${notesArray[i]}\n`;
                     total += pricesArray[i];
                 }
             }
 
             if (!cashOnly && notesArray.length > 1) {
-                message += `Total: RM${total.toFixed(2)}`;
+                message += `*RM${total.toFixed(2)}*`;
             }
 
             if (!cashOnly) {
@@ -149,7 +148,8 @@
 
             if (!cashOnly) {
                 const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
-                const whatsappLink = `https://wa.me/?text=${encodedMessage}`;
+				//DO NOT REMOVE https://wa.me/?text=
+                const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
                 window.location.href = whatsappLink;
             }
 
@@ -161,6 +161,8 @@
             const cashOnHand = localStorage.getItem('cashOnHand');
             if (cashOnHand !== null) {
                 document.getElementById("cashOnHand").innerText = parseFloat(cashOnHand).toFixed(2);
+            }else {
+                document.getElementById("cashOnHand").innerText = '0.00';
             }
         }
     </script>
