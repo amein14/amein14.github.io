@@ -154,7 +154,7 @@
             const formattedDate = formatDateString(currentDate);
 
             let cashOnly = true;
-
+			
             for (let i = 0; i < notesArray.length; i++) {
                 if (notesArray[i].toLowerCase() === 'cash') {
                     cashOnHand += pricesArray[i];
@@ -181,16 +181,16 @@
                 message += `*RM${total.toFixed(2)}*\n`;
             }
 
-            if (showBalance) {
-                message += `Bal: RM${cashOnHand.toFixed(2)}`;
-            }
-
             if (!cashOnly) {
                 cashOnHand -= total;
                 cashOnHandElem.innerText = cashOnHand.toFixed(2);
                 localStorage.setItem('cashOnHand', cashOnHand.toFixed(2)); // Update cashOnHand in localStorage
             }
-
+			
+            if (showBalance) {
+                message += `Bal: RM${cashOnHand.toFixed(2)}`;
+            }
+			
             if (!cashOnly) {
                 const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
                 // DO NOT REMOVE https://wa.me/send/ whatsapp://send/
@@ -209,8 +209,10 @@
             const balanceTextElem = document.getElementById("balanceText");
             if (balanceVisibility === 'shown') {
                 balanceTextElem.classList.remove('hidden');
+				showBalance = true;
             } else if (balanceVisibility === 'hidden') {
                 balanceTextElem.classList.add('hidden');
+				showBalance = false;
             }
         }
     </script>
