@@ -62,7 +62,6 @@
 		}
 
 		.instruction {
-			margin-bottom: 20px;
 			color: #aaa;
 			font-size: 10px;
 		}
@@ -86,6 +85,7 @@
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
+			margin-top: 10px;
 		}
 
 		.info-container p {
@@ -120,12 +120,12 @@
     <h1 class="common-styles">Share Expenses</h1>
     <form id="whatsappForm" class="common-styles">
         <label for="notes">Notes:</label>
+		<div class="instruction">
+            Use "cash" add balance, "showbal" show balance, "hidebal" hide balance.
+        </div>
         <input type="text" placeholder="Separate with commas..." id="notes" name="notes" required>
         <label for="price">Price:</label>
         <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
-        <div class="instruction">
-            Use "cash" to add balance, "showbal" to show balance, "hidebal" to hide balance.
-        </div>
         <div class="info-container">
             <p id="balanceText">Balance: RM<span id="cashOnHand"></span></p>
             <div class="whatsapp-button" onclick="generateLink()">
@@ -206,7 +206,7 @@
             updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
 
             if (showBalance) {
-                message += `Balance: RM${cashOnHand.toFixed(2)}`;
+                message += `Bal: RM${cashOnHand.toFixed(2)}`;
             }
 
             return { message, cashOnly };
