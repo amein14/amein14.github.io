@@ -6,116 +6,126 @@
     <title>Expenses2Whatsapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-        html, body {
-            height: 100%;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-        }
+		html, body {
+			height: 100%;
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+		}
 
-        body {
-            font-family: Roboto, sans-serif;
-            background-color: #1e1e1e;
-            color: #f5f5f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
+		body {
+			font-family: Roboto, sans-serif;
+			background-color: #1e1e1e;
+			color: #f5f5f5;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			flex-direction: column;
+		}
 
-        form {
-            width: 100%;
-            max-width: 400px;
-            background-color: #333;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+		.common-styles {
+			width: 100%;
+			max-width: 400px;
+			padding: 20px;
+			box-sizing: border-box;
+		}
 
-        h1 {
-            text-align: center;
-            margin: 0;
-            padding: 20px;
-            background-color: #444;
-            color: #f5f5f5;
-            width: 100%;
-	    max-width: 360px;	
-	    font-weight: normal;
-        }
+		h1 {
+			text-align: left;
+			font-weight: normal;
+			margin: 0;
+			background-color: #444;
+			color: #f5f5f5;
+		}
 
-        label {
-            margin-top: 20px;
-            margin-bottom: 5px;
-            color: #f5f5f5;
-        }
+		form {
+			background-color: #333;
+		}
 
-        input[type="text"],
-        input[type="number"] {
-            width: calc(100% - 10px);
-            padding: 10px 0px;
-            margin-bottom: 10px;
-            border: none;
-            border-bottom: 1px solid #f5f5f5;
-            background: transparent;
-            color: #f5f5f5;
-            font-size: 16px;
-            outline: none;
-        }
+		label {
+			margin-top: 20px;
+			margin-bottom: 5px;
+			color: #f5f5f5;
+		}
 
-        .instruction {
-            margin-bottom: 20px;
-            color: #aaa;
-            font-size: 10px;
-        }
+		input[type="text"],
+		input[type="number"] {
+			width: calc(100% - 10px);
+			padding: 10px 0px;
+			margin-bottom: 10px;
+			border: none;
+			border-bottom: 1px solid #f5f5f5;
+			background: transparent;
+			color: #f5f5f5;
+			font-size: 16px;
+			outline: none;
+		}
 
-        .whatsapp-button {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            cursor: pointer;
-        }
+		.instruction {
+			color: #aaa;
+			font-size: 10px;
+		}
 
-        .whatsapp-button i {
-            font-size: 40px;
-        }
+		.whatsapp-button {
+			display: flex;
+			justify-content: flex-end;
+			align-items: center;
+			cursor: pointer;
+		}
 
-        .whatsapp-button:hover {
-            color: #25D366;
-        }
+		.whatsapp-button i {
+			font-size: 40px;
+		}
 
-        .info-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+		.whatsapp-button:hover {
+			color: #25D366;
+		}
 
-        .info-container p {
-            margin: 0;
-            font-size: 16px;
-        }
+		.info-container {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-top: 10px;
+		}
 
-        .hidden {
-            visibility: hidden;
-        }
+		.info-container p {
+			margin: 0;
+			font-size: 16px;
+		}
 
-        input:focus::placeholder {
-            color: transparent;
-        }
+		.hidden {
+			visibility: hidden;
+		}
 
-        input::placeholder {
-            color: transparent;
-        }
+		input:focus::placeholder {
+			color: transparent;
+		}
+
+		input::placeholder {
+			color: transparent;
+		}
+
+
+		@media (max-width: 600px) {
+			h1 {
+				padding: 20px;
+				width: 100%;
+				box-sizing: border-box;
+			}
+		}
+
     </style>
 </head>
 <body>
-    <h1>SHARE EXPENSES</h1>
-    <form id="whatsappForm">
+    <h1 class="common-styles">Share Expenses</h1>
+    <form id="whatsappForm" class="common-styles">
         <label for="notes">Notes:</label>
+		<div class="instruction">
+            Use "cash" add balance, "showbal" show balance, "hidebal" hide balance.
+        </div>
         <input type="text" placeholder="Separate with commas..." id="notes" name="notes" required>
         <label for="price">Price:</label>
         <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
-        <div class="instruction">
-            Use "cash" to add to balance, "showbal" to show balance, "hidebal" to hide balance.
-        </div>
         <div class="info-container">
             <p id="balanceText">Balance: RM<span id="cashOnHand"></span></p>
             <div class="whatsapp-button" onclick="generateLink()">
@@ -124,6 +134,8 @@
         </div>
     </form>
     <script>
+        let showBalance = false;
+
         function toTitleCase(str) {
             return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         }
@@ -135,75 +147,117 @@
             return `${day}/${month}/${year}`;
         }
 
- function generateLink() {
-    const notesInput = document.getElementById("notes").value;
-    const pricesInput = document.getElementById("price").value;
-    const cashOnHandElem = document.getElementById("cashOnHand");
-    const balanceTextElem = document.getElementById("balanceText");
-    let cashOnHand = parseFloat(cashOnHandElem.innerText) || 0;
-    if (notesInput === "" && pricesInput === "") {
-        return;
-    }
-    const notesArray = notesInput.split(',').map(note => toTitleCase(note.trim()));
-    const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim()));
-
-    let message = "";
-    let total = 0;
-    const currentDate = new Date();
-    const formattedDate = formatDateString(currentDate);
-
-    let cashOnly = true;
-    for (let i = 0; i < notesArray.length; i++) {
-        if (notesArray[i].toLowerCase() === 'cash') {
-            cashOnHand += pricesArray[i];
-			cashOnHandElem.innerText = cashOnHand.toFixed(2);
-			localStorage.setItem('cashOnHand', cashOnHand.toFixed(2));
-                } else if (notesArray[i].toLowerCase() === 'showbal') {
-                    balanceTextElem.classList.remove('hidden');
-					localStorage.setItem('balanceVisibility', 'shown');
-                } else if (notesArray[i].toLowerCase() === 'hidebal') {
-                    balanceTextElem.classList.add('hidden');
-					localStorage.setItem('balanceVisibility', 'hidden');
-        } else {
-            cashOnly = false;
-            message += `RM${pricesArray[i].toFixed(2)}: ${notesArray[i]}\n`;
-            total += pricesArray[i];
+        function updateLocalStorage(key, value) {
+            localStorage.setItem(key, value);
         }
-    }
 
-    if (!cashOnly && notesArray.length > 1) {
-        message += `*RM${total.toFixed(2)}*`;
-    }
+        function getLocalStorage(key, defaultValue) {
+            return parseFloat(localStorage.getItem(key)) || defaultValue;
+        }
 
-    if (!cashOnly) {
-        cashOnHand -= total;
-        cashOnHandElem.innerText = cashOnHand.toFixed(2);
-        localStorage.setItem('cashOnHand', cashOnHand.toFixed(2)); // Update cashOnHand in localStorage
-    }
+        function updateBalanceDisplay(cashOnHand) {
+            document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
+        }
 
-    if (!cashOnly) {
-        const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
-        //DO NOT REMOVE https://wa.me/?text=
-        const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
-        window.location.href = whatsappLink;
-    }
+        function toggleBalanceVisibility(isVisible) {
+            const balanceTextElem = document.getElementById("balanceText");
+            if (isVisible) {
+                balanceTextElem.classList.remove('hidden');
+            } else {
+                balanceTextElem.classList.add('hidden');
+            }
+            showBalance = isVisible;
+        }
 
-    document.getElementById("notes").value = "";
-    document.getElementById("price").value = "";
-}
+        function handleNoteActions(notesArray, pricesArray) {
+            let cashOnHand = getLocalStorage('cashOnHand', 0);
+            let message = "";
+            let total = 0;
+            let cashOnly = true;
 
-window.onload = function() {
-    const cashOnHand = parseFloat(localStorage.getItem('cashOnHand')) || 0;
-    document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
-	    const balanceVisibility = localStorage.getItem('balanceVisibility');
-    const balanceTextElem = document.getElementById("balanceText");
-    if (balanceVisibility === 'shown') {
-        balanceTextElem.classList.remove('hidden');
-    } else if (balanceVisibility === 'hidden') {
-        balanceTextElem.classList.add('hidden');
-    }
-}
+            for (let i = 0; i < notesArray.length; i++) {
+                const note = notesArray[i].toLowerCase();
+                const price = pricesArray[i];
 
+                if (note === 'cash') {
+                    cashOnHand += price;
+                } else if (note === 'showbal') {
+                    toggleBalanceVisibility(true);
+                    updateLocalStorage('balanceVisibility', 'shown');
+                } else if (note === 'hidebal') {
+                    toggleBalanceVisibility(false);
+                    updateLocalStorage('balanceVisibility', 'hidden');
+                } else {
+                    cashOnly = false;
+                    message += `RM${price.toFixed(2)}: ${notesArray[i]}\n`;
+                    total += price;
+                }
+            }
+
+            if (!cashOnly && notesArray.length > 1) {
+                message += `*RM${total.toFixed(2)}*\n`;
+            }
+
+            if (!cashOnly) {
+                cashOnHand -= total;
+            }
+
+            updateBalanceDisplay(cashOnHand);
+            updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
+
+            if (showBalance) {
+                message += `Bal: RM${cashOnHand.toFixed(2)}`;
+            }
+
+            return { message, cashOnly };
+        }
+
+        function generateLink() {
+            const notesInput = document.getElementById("notes").value;
+            const pricesInput = document.getElementById("price").value;
+			
+			const predefinedKeywords = ["showbal", "hidebal"];
+
+			if (notesInput === "" && pricesInput === "") {
+				return;
+			}
+
+			if (notesInput === "" && pricesInput !== "") {
+				return;
+			}
+
+			if (notesInput !== "" && !notesInput.split(',').every((note, index) => predefinedKeywords.includes(note.trim().toLowerCase())) && pricesInput === "") {
+				return;
+			}
+	            // Handle scenario where there is only one note and multiple prices
+	            if (notesArray.length === 1 && pricesArray.length > 1) {
+	                pricesArray.length = 1;  // Reduce pricesArray to single element
+	                pricesArray[0] = total;  // Set this element to the total of all prices
+	            }
+            const notesArray = notesInput.split(',').map(note => toTitleCase(note.trim()));
+            const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+            const { message, cashOnly } = handleNoteActions(notesArray, pricesArray);
+
+            if (!cashOnly) {
+                const currentDate = new Date();
+                const formattedDate = formatDateString(currentDate);
+                const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
+                const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+                window.location.href = whatsappLink;
+            }
+
+            document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
+        }
+
+        window.onload = function() {
+            const cashOnHand = getLocalStorage('cashOnHand', 0);
+            updateBalanceDisplay(cashOnHand);
+
+            const balanceVisibility = localStorage.getItem('balanceVisibility');
+            toggleBalanceVisibility(balanceVisibility === 'shown');
+        }
     </script>
 </body>
 </html>
