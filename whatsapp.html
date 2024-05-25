@@ -6,113 +6,112 @@
     <title>Expenses2Whatsapp</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
-		html, body {
-			height: 100%;
-			overflow: hidden;
-			margin: 0;
-			padding: 0;
-		}
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
 
-		body {
-			font-family: Roboto, sans-serif;
-			background-color: #1e1e1e;
-			color: #f5f5f5;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			flex-direction: column;
-		}
+        body {
+            font-family: Roboto, sans-serif;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
 
-		.common-styles {
-			width: 100%;
-			max-width: 400px;
-			padding: 20px;
-			box-sizing: border-box;
-		}
+        .common-styles {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-		h1 {
-			text-align: left;
-			font-weight: normal;
-			margin: 0;
-			background-color: #444;
-			color: #f5f5f5;
-		}
+        h1 {
+            text-align: left;
+            font-weight: normal;
+            margin: 0;
+            background-color: #444;
+            color: #f5f5f5;
+        }
 
-		form {
-			background-color: #333;
-		}
+        form {
+            background-color: #333;
+        }
 
-		label {
-			margin-top: 20px;
-			margin-bottom: 5px;
-			color: #f5f5f5;
-		}
+        label {
+            margin-top: 20px;
+            margin-bottom: 5px;
+            color: #f5f5f5;
+        }
 
-		input[type="text"],
-		input[type="number"] {
-			width: calc(100% - 10px);
-			padding: 10px 0px;
-			margin-bottom: 10px;
-			border: none;
-			border-bottom: 1px solid #f5f5f5;
-			background: transparent;
-			color: #f5f5f5;
-			font-size: 16px;
-			outline: none;
-		}
+        input[type="text"],
+        input[type="number"] {
+            width: calc(100% - 10px);
+            padding: 10px 0px;
+            margin-bottom: 10px;
+            border: none;
+            border-bottom: 1px solid #f5f5f5;
+            background: transparent;
+            color: #f5f5f5;
+            font-size: 16px;
+            outline: none;
+        }
 
-		.instruction {
-			color: #aaa;
-			font-size: 10px;
-		}
+        .instruction {
+            color: #aaa;
+            font-size: 10px;
+        }
 
-		.whatsapp-button {
-			display: flex;
-			justify-content: flex-end;
-			align-items: center;
-			cursor: pointer;
-		}
+        .whatsapp-button {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            cursor: pointer;
+        }
 
-		.whatsapp-button i {
-			font-size: 40px;
-		}
+        .whatsapp-button i {
+            font-size: 40px;
+        }
 
-		.whatsapp-button:hover {
-			color: #25D366;
-		}
+        .whatsapp-button:hover {
+            color: #25D366;
+        }
 
-		.info-container {
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-			margin-top: 10px;
-		}
+        .info-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
 
-		.info-container p {
-			margin: 0;
-			font-size: 16px;
-		}
+        .info-container p {
+            margin: 0;
+            font-size: 16px;
+        }
 
-		.hidden {
-			visibility: hidden;
-		}
+        .hidden {
+            visibility: hidden;
+        }
 
-		input:focus::placeholder {
-			color: transparent;
-		}
+        input:focus::placeholder {
+            color: transparent;
+        }
 
-		input::placeholder {
-			color: transparent;
-		}
+        input::placeholder {
+            color: transparent;
+        }
 
-
-		@media (max-width: 600px) {
-			h1 {
-				padding: 20px;
-				width: 100%;
-				box-sizing: border-box;
-			}
-		}
+        @media (max-width: 600px) {
+            h1 {
+                padding: 20px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
 
     </style>
 </head>
@@ -120,8 +119,8 @@
     <h1 class="common-styles">Share Expenses</h1>
     <form id="whatsappForm" class="common-styles">
         <label for="notes">Notes:</label>
-		<div class="instruction">
-            Use "cash" add balance, "showbal" show balance, "hidebal" hide balance.
+        <div class="instruction">
+            Use "cash" to add to balance, "showbal" to show balance, "hidebal" to hide balance.
         </div>
         <input type="text" placeholder="Separate with commas..." id="notes" name="notes" required>
         <label for="price">Price:</label>
@@ -215,27 +214,30 @@
         function generateLink() {
             const notesInput = document.getElementById("notes").value;
             const pricesInput = document.getElementById("price").value;
-			
-			const predefinedKeywords = ["showbal", "hidebal"];
 
-			if (notesInput === "" && pricesInput === "") {
-				return;
-			}
+            const predefinedKeywords = ["showbal", "hidebal"];
 
-			if (notesInput === "" && pricesInput !== "") {
-				return;
-			}
+            if (notesInput === "" && pricesInput === "") {
+                return;
+            }
 
-			if (notesInput !== "" && !notesInput.split(',').every((note, index) => predefinedKeywords.includes(note.trim().toLowerCase())) && pricesInput === "") {
-				return;
-			}
-	            // Handle scenario where there is only one note and multiple prices
-	            if (notesArray.length === 1 && pricesArray.length > 1) {
-	                pricesArray.length = 1;  // Reduce pricesArray to single element
-	                pricesArray[0] = total;  // Set this element to the total of all prices
-	            }
+            if (notesInput === "" && pricesInput !== "") {
+                return;
+            }
+
+            if (notesInput !== "" && !notesInput.split(',').every((note, index) => predefinedKeywords.includes(note.trim().toLowerCase())) && pricesInput === "") {
+                return;
+            }
+
             const notesArray = notesInput.split(',').map(note => toTitleCase(note.trim()));
             const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+            // Handle scenario where there is only one note and multiple prices
+            if (notesArray.length === 1 && pricesArray.length > 1) {
+                const total = pricesArray.reduce((acc, price) => acc + price, 0); // Calculate the total of all prices
+                pricesArray.length = 1;  // Reduce pricesArray to a single element
+                pricesArray[0] = total;  // Set this element to the total of all prices
+            }
 
             const { message, cashOnly } = handleNoteActions(notesArray, pricesArray);
 
