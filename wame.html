@@ -66,18 +66,28 @@
             font-size: 10px;
         }
 
-        .whatsapp-button {
+        .buttons-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .whatsapp-button,
+        .add-button {
             display: flex;
             justify-content: flex-end;
             align-items: center;
             cursor: pointer;
+            margin-left: 10px;
         }
 
-        .whatsapp-button i {
-            font-size: 40px;
+        .whatsapp-button i,
+        .add-button i {
+            font-size: 30px;
         }
 
-        .whatsapp-button:hover {
+        .whatsapp-button:hover,
+        .add-button:hover {
             color: #25D366;
         }
 
@@ -105,6 +115,18 @@
             color: transparent;
         }
 
+        .notes-list {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #444;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .notes-list p {
+            margin: 5px 0;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 padding: 20px;
@@ -112,7 +134,6 @@
                 box-sizing: border-box;
             }
         }
-
     </style>
 </head>
 <body>
@@ -120,146 +141,128 @@
     <form id="whatsappForm" class="common-styles">
         <label for="notes">Notes:</label>
         <div class="instruction">
-            Use "cash" to add to balance, "showbal" to show balance, "hidebal" to hide balance.
+            Use "cash" add balance.
         </div>
         <input type="text" placeholder="Separate with commas..." id="notes" name="notes" required>
         <label for="price">Price:</label>
         <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
         <div class="info-container">
             <p id="balanceText">Balance: RM<span id="cashOnHand"></span></p>
-            <div class="whatsapp-button" onclick="generateLink()">
-                <i class="fab fa-whatsapp"></i>
+            <div class="buttons-container">
+                <div class="add-button" onclick="addlist()">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="whatsapp-button" onclick="generateLink()">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
             </div>
         </div>
+        <div id="notesList" class="notes-list hidden"></div>
     </form>
-    <script>
-        let showBalance = false;
+<script>
+    let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
+    let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
 
-        function toTitleCase(str) {
-            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        }
+    function toTitleCase(str) {
+        return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
 
+    function updateLocalStorage(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
         function formatDateString(date) {
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
             return `${day}/${month}/${year}`;
         }
+    function getLocalStorage(key, defaultValue) {
+        return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
+    }
 
-        function updateLocalStorage(key, value) {
-            localStorage.setItem(key, value);
+    function updateBalanceDisplay(cashOnHand) {
+        cashOnHand = parseFloat(cashOnHand); // Convert to number if necessary
+        document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
+    }
+
+    function addlist() {
+        const notesInput = document.getElementById("notes").value;
+        const pricesInput = document.getElementById("price").value;
+
+        if (notesInput === "" || pricesInput === "") {
+            return;
         }
 
-        function getLocalStorage(key, defaultValue) {
-            return parseFloat(localStorage.getItem(key)) || defaultValue;
-        }
+        const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
+        const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
 
-        function updateBalanceDisplay(cashOnHand) {
-            document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
-        }
+        newNotes.forEach((note, index) => {
+            notesArray.push(note);
+            pricesArray.push(newPrices[index]);
 
-        function toggleBalanceVisibility(isVisible) {
-            const balanceTextElem = document.getElementById("balanceText");
-            if (isVisible) {
-                balanceTextElem.classList.remove('hidden');
-            } else {
-                balanceTextElem.classList.add('hidden');
-            }
-            showBalance = isVisible;
-        }
-
-        function handleNoteActions(notesArray, pricesArray) {
             let cashOnHand = getLocalStorage('cashOnHand', 0);
-            let message = "";
-            let total = 0;
-            let cashOnly = true;
 
-            for (let i = 0; i < notesArray.length; i++) {
-                const note = notesArray[i].toLowerCase();
-                const price = pricesArray[i];
-
-                if (note === 'cash') {
-                    cashOnHand += price;
-                } else if (note === 'showbal') {
-                    toggleBalanceVisibility(true);
-                    updateLocalStorage('balanceVisibility', 'shown');
-                } else if (note === 'hidebal') {
-                    toggleBalanceVisibility(false);
-                    updateLocalStorage('balanceVisibility', 'hidden');
-                } else {
-                    cashOnly = false;
-                    message += `RM${price.toFixed(2)}: ${notesArray[i]}\n`;
-                    total += price;
-                }
-            }
-
-            if (!cashOnly && notesArray.length > 1) {
-                message += `*RM${total.toFixed(2)}*\n`;
-            }
-
-            if (!cashOnly) {
-                cashOnHand -= total;
+            if (note.toLowerCase() === 'cash') {
+                cashOnHand += newPrices[index];
+            } else {
+                cashOnHand -= newPrices[index];
             }
 
             updateBalanceDisplay(cashOnHand);
             updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
+        });
 
-            if (showBalance) {
-                message += `Bal: RM${cashOnHand.toFixed(2)}`;
-            }
+        updateNotesList();
+        updateLocalStorage('notesArray', notesArray);
+        updateLocalStorage('pricesArray', pricesArray);
 
-            return { message, cashOnly };
-        }
+        document.getElementById("notes").value = "";
+        document.getElementById("price").value = "";
+    }
 
-        function generateLink() {
-            const notesInput = document.getElementById("notes").value;
-            const pricesInput = document.getElementById("price").value;
+    function updateNotesList() {
+        const notesListElem = document.getElementById("notesList");
+        notesListElem.innerHTML = notesArray.map((note, index) => `<p>${note}: RM${pricesArray[index].toFixed(2)}</p>`).join('');
+        notesListElem.classList.remove('hidden');
+    }
 
-            const predefinedKeywords = ["showbal", "hidebal"];
+function generateLink() {
+    if (notesArray.length === 0) {
+        return;
+    }
 
-            if (notesInput === "" && pricesInput === "") {
-                return;
-            }
+    const currentDate = new Date();
+    const formattedDate = formatDateString(currentDate);
+    let message = `${formattedDate}\n`;
 
-            if (notesInput === "" && pricesInput !== "") {
-                return;
-            }
+    notesArray.forEach((note, index) => {
+        message += `RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+    });
 
-            if (notesInput !== "" && !notesInput.split(',').every((note, index) => predefinedKeywords.includes(note.trim().toLowerCase())) && pricesInput === "") {
-                return;
-            }
+    // Include balance information
+    let cashOnHand = getLocalStorage('cashOnHand', 0);
+    message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
 
-            const notesArray = notesInput.split(',').map(note => toTitleCase(note.trim()));
-            const pricesArray = pricesInput.split(',').map(price => parseFloat(price.trim()));
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappLink = `https://wa.me/send/?text=${encodedMessage}`;
+    window.location.href = whatsappLink;
 
-            // Handle scenario where there is only one note and multiple prices
-            if (notesArray.length === 1 && pricesArray.length > 1) {
-                const total = pricesArray.reduce((acc, price) => acc + price, 0); // Calculate the total of all prices
-                pricesArray.length = 1;  // Reduce pricesArray to a single element
-                pricesArray[0] = total;  // Set this element to the total of all prices
-            }
+    // Clear notesArray after generating link
+    notesArray = [];
+    pricesArray = []; // Optionally clear pricesArray if needed
+    updateLocalStorage('notesArray', notesArray);
+    updateLocalStorage('pricesArray', pricesArray);
+}
 
-            const { message, cashOnly } = handleNoteActions(notesArray, pricesArray);
+    window.onload = function() {
+        let cashOnHand = getLocalStorage('cashOnHand', 0); // Ensure default value is a number
+        updateBalanceDisplay(cashOnHand);
+        updateNotesList();
+		        document.getElementById("notes").value = "";
+        document.getElementById("price").value = "";
+    }
+</script>
 
-            if (!cashOnly) {
-                const currentDate = new Date();
-                const formattedDate = formatDateString(currentDate);
-                const encodedMessage = encodeURIComponent(`${formattedDate}\n${message}`);
-                const whatsappLink = `https://wa.me/send/?text=${encodedMessage}`;
-                window.location.href = whatsappLink;
-            }
 
-            document.getElementById("notes").value = "";
-            document.getElementById("price").value = "";
-        }
-
-        window.onload = function() {
-            const cashOnHand = getLocalStorage('cashOnHand', 0);
-            updateBalanceDisplay(cashOnHand);
-
-            const balanceVisibility = localStorage.getItem('balanceVisibility');
-            toggleBalanceVisibility(balanceVisibility === 'shown');
-        }
-    </script>
 </body>
 </html>
