@@ -222,7 +222,7 @@
 
     function updateNotesList() {
         const notesListElem = document.getElementById("notesList");
-        notesListElem.innerHTML = notesArray.map((note, index) => `<p>${note}: RM${pricesArray[index].toFixed(2)}</p>`).join('');
+        notesListElem.innerHTML = notesArray.map((note, index) => `<p>RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
         notesListElem.classList.remove('hidden');
     }
 
