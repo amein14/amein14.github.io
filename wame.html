@@ -229,7 +229,52 @@
         }
 
         function formatDateString(date) {
-    const day = String(date.getDate()).padStart(2, '0');
+    const day = Strifunction addlist() {
+            const notesInput = document.getElementById("notes").value;
+            const pricesInput = document.getElementById("price").value;
+
+            if (notesInput === "" || pricesInput === "") {
+                return;
+            }
+
+            const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
+            const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+            newNotes.forEach((note, index) => {
+                notesArray.push(note);
+                pricesArray.push(newPrices[index]);
+
+                let cashOnHand = getLocalStorage('cashOnHand', 0);
+
+                if (note.toLowerCase() === 'cash') {
+                    cashOnHand += newPrices[index];
+                } else {
+                    cashOnHand -= newPrices[index];
+                }
+
+                updateBalanceDisplay(cashOnHand);
+                updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
+            });
+
+            updateNotesList();
+            updateLocalStorage('notesArray', notesArray);
+            updateLocalStorage('pricesArray', pricesArray);
+
+            document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
+        }
+
+        function updateNotesList() {
+            const notesListElem = document.getElementById("notesList");
+            if (notesArray.length === 0) {
+                notesListElem.innerHTML = '';
+                notesListElem.classList.add('hidden');
+            } else {
+                notesListElem.innerHTML = notesArray.map((note, index) => `<p>${formattedDate2}:RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
+                notesListElem.classList.remove('hidden');
+            }
+        }
+ng(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
