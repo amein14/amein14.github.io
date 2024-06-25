@@ -217,16 +217,21 @@
             document.getElementById("price").value = "";
         }
 
-        function updateNotesList() {
-            const notesListElem = document.getElementById("notesList");
-            if (notesArray.length === 0) {
-                notesListElem.innerHTML = '';
-                notesListElem.classList.add('hidden');
-            } else {
-                notesListElem.innerHTML = notesArray.map((note, index) => `<p>${formattedDate2}:RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
-                notesListElem.classList.remove('hidden');
-            }
-        }
+        function updateNotesList(currentDate) {
+    const notesListElem = document.getElementById("notesList");
+
+    // Format the date inside the function
+    const formattedDate2 = formatDateString2(currentDate);
+
+    if (notesArray.length === 0) {
+        notesListElem.innerHTML = '';
+        notesListElem.classList.add('hidden');
+    } else {
+        notesListElem.innerHTML = notesArray.map((note, index) => `<p>${formattedDate2}:RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
+        notesListElem.classList.remove('hidden');
+    }
+}
+
 
         function formatDateString(date) {
     const day = Strifunction addlist() {
@@ -313,7 +318,7 @@ function generateLink() {
     pricesArray = []; // Optionally clear pricesArray if needed
     updateLocalStorage('notesArray', notesArray);
     updateLocalStorage('pricesArray', pricesArray);
-    updateNotesList(); // Ensure the notes list is updated to reflect the cleared arrays
+    updateNotesList(currentDate);// Ensure the notes list is updated to reflect the cleared arrays
 }
 
 
