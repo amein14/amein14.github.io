@@ -104,7 +104,7 @@
         }
 
         .hidden {
-            visibility: hidden;
+            display: none;
         }
 
         input:focus::placeholder {
@@ -137,7 +137,7 @@
     </style>
 </head>
 <body>
-    <h1 class="common-styles">Share Expenses</h1>
+    <h1 class="common-styles">Expenses2Whatsapp</h1>
     <form id="whatsappForm" class="common-styles">
         <label for="notes">Notes:</label>
         <div class="instruction">
@@ -159,110 +159,125 @@
         </div>
         <div id="notesList" class="notes-list hidden"></div>
     </form>
-<script>
-    let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
-    let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
+    <script>
+        let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
+        let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
 
-    function toTitleCase(str) {
-        return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    }
+        function toTitleCase(str) {
+            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
 
-    function updateLocalStorage(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
-    }
+        function updateLocalStorage(key, value) {
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+
         function formatDateString(date) {
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const year = date.getFullYear();
             return `${day}/${month}/${year}`;
         }
-    function getLocalStorage(key, defaultValue) {
-        return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
-    }
 
-    function updateBalanceDisplay(cashOnHand) {
-        cashOnHand = parseFloat(cashOnHand); // Convert to number if necessary
-        document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
-    }
+	function formatDateString2(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}`;
+        }
+ 
 
-    function addlist() {
-        const notesInput = document.getElementById("notes").value;
-        const pricesInput = document.getElementById("price").value;
-
-        if (notesInput === "" || pricesInput === "") {
-            return;
+        function getLocalStorage(key, defaultValue) {
+            return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
         }
 
-        const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
-        const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
+        function updateBalanceDisplay(cashOnHand) {
+            cashOnHand = parseFloat(cashOnHand); // Convert to number if necessary
+            document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
+        }
 
-        newNotes.forEach((note, index) => {
-            notesArray.push(note);
-            pricesArray.push(newPrices[index]);
+        function addlist() {
+            const notesInput = document.getElementById("notes").value;
+            const pricesInput = document.getElementById("price").value;
 
-            let cashOnHand = getLocalStorage('cashOnHand', 0);
-
-            if (note.toLowerCase() === 'cash') {
-                cashOnHand += newPrices[index];
-            } else {
-                cashOnHand -= newPrices[index];
+            if (notesInput === "" || pricesInput === "") {
+                return;
             }
 
+            const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
+            const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+            newNotes.forEach((note, index) => {
+                notesArray.push(note);
+                pricesArray.push(newPrices[index]);
+
+                let cashOnHand = getLocalStorage('cashOnHand', 0);
+
+                if (note.toLowerCase() === 'cash') {
+                    cashOnHand += newPrices[index];
+                } else {
+                    cashOnHand -= newPrices[index];
+                }
+
+                updateBalanceDisplay(cashOnHand);
+                updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
+            });
+
+            updateNotesList();
+            updateLocalStorage('notesArray', notesArray);
+            updateLocalStorage('pricesArray', pricesArray);
+
+            document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
+        }
+
+        function updateNotesList() {
+            const notesListElem = document.getElementById("notesList");
+            if (notesArray.length === 0) {
+                notesListElem.innerHTML = '';
+                notesListElem.classList.add('hidden');
+            } else {
+                notesListElem.innerHTML = notesArray.map((note, index) => `<p>RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
+                notesListElem.classList.remove('hidden');
+            }
+        }
+
+        function generateLink() {
+            if (notesArray.length === 0) {
+                return;
+            }
+
+            const currentDate = new Date();
+            const formattedDate = formatDateString(currentDate);
+	    const formattedDate2 = formatDateString2(currentDate); 
+            let message = `${formattedDate}\n`;
+
+            notesArray.forEach((note, index) => {
+                message += `${formattedDate2}:RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+            });
+
+            // Include balance information
+            let cashOnHand = getLocalStorage('cashOnHand', 0);
+            message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+            window.location.href = whatsappLink;
+
+            // Clear notesArray after generating link
+            notesArray = [];
+            pricesArray = []; // Optionally clear pricesArray if needed
+            updateLocalStorage('notesArray', notesArray);
+            updateLocalStorage('pricesArray', pricesArray);
+            updateNotesList(); // Ensure the notes list is updated to reflect the cleared arrays
+        }
+
+        window.onload = function() {
+            let cashOnHand = getLocalStorage('cashOnHand', 0); // Ensure default value is a number
             updateBalanceDisplay(cashOnHand);
-            updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
-        });
-
-        updateNotesList();
-        updateLocalStorage('notesArray', notesArray);
-        updateLocalStorage('pricesArray', pricesArray);
-
-        document.getElementById("notes").value = "";
-        document.getElementById("price").value = "";
-    }
-
-    function updateNotesList() {
-        const notesListElem = document.getElementById("notesList");
-        notesListElem.innerHTML = notesArray.map((note, index) => `<p>RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
-        notesListElem.classList.remove('hidden');
-    }
-
-function generateLink() {
-    if (notesArray.length === 0) {
-        return;
-    }
-
-    const currentDate = new Date();
-    const formattedDate = formatDateString(currentDate);
-    let message = `${formattedDate}\n`;
-
-    notesArray.forEach((note, index) => {
-        message += `RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-    });
-
-    // Include balance information
-    let cashOnHand = getLocalStorage('cashOnHand', 0);
-    message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
-
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
-    window.location.href = whatsappLink;
-
-    // Clear notesArray after generating link
-    notesArray = [];
-    pricesArray = []; // Optionally clear pricesArray if needed
-    updateLocalStorage('notesArray', notesArray);
-    updateLocalStorage('pricesArray', pricesArray);
-}
-
-    window.onload = function() {
-        let cashOnHand = getLocalStorage('cashOnHand', 0); // Ensure default value is a number
-        updateBalanceDisplay(cashOnHand);
-        updateNotesList();
-		        document.getElementById("notes").value = "";
-        document.getElementById("price").value = "";
-    }
-</script>
-
-
+            updateNotesList();
+            document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
+        }
+    </script>
 </body>
 </html>
