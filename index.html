@@ -251,7 +251,7 @@
             message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
 
             const encodedMessage = encodeURIComponent(message);
-            const whatsappLink = `whatsapp://wa.me/send/?text=${encodedMessage}`;
+            const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
             window.location.href = whatsappLink;
 
             // Clear notesArray after generating link
