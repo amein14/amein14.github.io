@@ -171,20 +171,7 @@
             localStorage.setItem(key, JSON.stringify(value));
         }
 
-        function formatDateString(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
-        }
-
-	function formatDateString2(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}`;
-        }
- 
+        
 
         function getLocalStorage(key, defaultValue) {
             return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
@@ -241,35 +228,49 @@
             }
         }
 
-        function generateLink() {
-            if (notesArray.length === 0) {
-                return;
-            }
+        function formatDateString(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
 
-            const currentDate = new Date();
-            const formattedDate = formatDateString(currentDate);
-	    const formattedDate2 = formatDateString2(currentDate); 
-            let message = `${formattedDate}\n`;
+function formatDateString2(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    return `${day}/${month}`;
+}
 
-            notesArray.forEach((note, index) => {
-                message += `${formattedDate2}:RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-            });
+function generateLink() {
+    if (notesArray.length === 0) {
+        return;
+    }
 
-            // Include balance information
-            let cashOnHand = getLocalStorage('cashOnHand', 0);
-            message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
+    const currentDate = new Date();
+    const formattedDate = formatDateString(currentDate);
+    const formattedDate2 = formatDateString2(currentDate); 
+    let message = `${formattedDate}\n`;
 
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
-            window.location.href = whatsappLink;
+    notesArray.forEach((note, index) => {
+        message += `${formattedDate2}: RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+    });
 
-            // Clear notesArray after generating link
-            notesArray = [];
-            pricesArray = []; // Optionally clear pricesArray if needed
-            updateLocalStorage('notesArray', notesArray);
-            updateLocalStorage('pricesArray', pricesArray);
-            updateNotesList(); // Ensure the notes list is updated to reflect the cleared arrays
-        }
+    // Include balance information
+    let cashOnHand = getLocalStorage('cashOnHand', 0);
+    message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
+
+    const encodedMessage = encodeURIComponent(message);
+    const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+    window.location.href = whatsappLink;
+
+    // Clear notesArray after generating link
+    notesArray = [];
+    pricesArray = []; // Optionally clear pricesArray if needed
+    updateLocalStorage('notesArray', notesArray);
+    updateLocalStorage('pricesArray', pricesArray);
+    updateNotesList(); // Ensure the notes list is updated to reflect the cleared arrays
+}
+
 
         window.onload = function() {
             let cashOnHand = getLocalStorage('cashOnHand', 0); // Ensure default value is a number
