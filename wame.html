@@ -171,8 +171,6 @@
             localStorage.setItem(key, JSON.stringify(value));
         }
 
-        
-
         function getLocalStorage(key, defaultValue) {
             return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
         }
@@ -209,7 +207,8 @@
                 updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
             });
 
-            updateNotesList();
+            const currentDate = new Date();
+            updateNotesList(currentDate); // Pass the current date to the function
             updateLocalStorage('notesArray', notesArray);
             updateLocalStorage('pricesArray', pricesArray);
 
@@ -218,59 +217,11 @@
         }
 
         function updateNotesList(currentDate) {
-    const notesListElem = document.getElementById("notesList");
-
-    // Format the date inside the function
-    const formattedDate2 = formatDateString2(currentDate);
-
-    if (notesArray.length === 0) {
-        notesListElem.innerHTML = '';
-        notesListElem.classList.add('hidden');
-    } else {
-        notesListElem.innerHTML = notesArray.map((note, index) => `<p>${formattedDate2}:RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
-        notesListElem.classList.remove('hidden');
-    }
-}
-
-
-        function formatDateString(date) {
-    const day = Strifunction addlist() {
-            const notesInput = document.getElementById("notes").value;
-            const pricesInput = document.getElementById("price").value;
-
-            if (notesInput === "" || pricesInput === "") {
-                return;
-            }
-
-            const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
-            const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
-
-            newNotes.forEach((note, index) => {
-                notesArray.push(note);
-                pricesArray.push(newPrices[index]);
-
-                let cashOnHand = getLocalStorage('cashOnHand', 0);
-
-                if (note.toLowerCase() === 'cash') {
-                    cashOnHand += newPrices[index];
-                } else {
-                    cashOnHand -= newPrices[index];
-                }
-
-                updateBalanceDisplay(cashOnHand);
-                updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
-            });
-
-            updateNotesList();
-            updateLocalStorage('notesArray', notesArray);
-            updateLocalStorage('pricesArray', pricesArray);
-
-            document.getElementById("notes").value = "";
-            document.getElementById("price").value = "";
-        }
-
-        function updateNotesList() {
             const notesListElem = document.getElementById("notesList");
+
+            // Format the date inside the function
+            const formattedDate2 = formatDateString2(currentDate);
+
             if (notesArray.length === 0) {
                 notesListElem.innerHTML = '';
                 notesListElem.classList.add('hidden');
@@ -279,53 +230,55 @@
                 notesListElem.classList.remove('hidden');
             }
         }
-ng(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-}
 
-function formatDateString2(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    return `${day}/${month}`;
-}
+        function formatDateString(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
 
-function generateLink() {
-    if (notesArray.length === 0) {
-        return;
-    }
+        function formatDateString2(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${day}/${month}`;
+        }
 
-    const currentDate = new Date();
-    const formattedDate = formatDateString(currentDate);
-    const formattedDate2 = formatDateString2(currentDate); 
-    let message = `${formattedDate}\n`;
+        function generateLink() {
+            if (notesArray.length === 0) {
+                return;
+            }
 
-    notesArray.forEach((note, index) => {
-        message += `${formattedDate2}: RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-    });
+            const currentDate = new Date();
+            const formattedDate = formatDateString(currentDate);
+            const formattedDate2 = formatDateString2(currentDate); 
+            let message = `${formattedDate}\n`;
 
-    // Include balance information
-    let cashOnHand = getLocalStorage('cashOnHand', 0);
-    message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
+            notesArray.forEach((note, index) => {
+                message += `${formattedDate2}: RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+            });
 
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
-    window.location.href = whatsappLink;
+            // Include balance information
+            let cashOnHand = getLocalStorage('cashOnHand', 0);
+            message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
 
-    // Clear notesArray after generating link
-    notesArray = [];
-    pricesArray = []; // Optionally clear pricesArray if needed
-    updateLocalStorage('notesArray', notesArray);
-    updateLocalStorage('pricesArray', pricesArray);
-    updateNotesList(currentDate);// Ensure the notes list is updated to reflect the cleared arrays
-}
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+            window.location.href = whatsappLink;
 
+            // Clear notesArray after generating link
+            notesArray = [];
+            pricesArray = []; // Optionally clear pricesArray if needed
+            updateLocalStorage('notesArray', notesArray);
+            updateLocalStorage('pricesArray', pricesArray);
+            updateNotesList(currentDate);// Ensure the notes list is updated to reflect the cleared arrays
+        }
 
         window.onload = function() {
             let cashOnHand = getLocalStorage('cashOnHand', 0); // Ensure default value is a number
             updateBalanceDisplay(cashOnHand);
-            updateNotesList();
+            const currentDate = new Date();
+            updateNotesList(currentDate); // Pass the current date to the function
             document.getElementById("notes").value = "";
             document.getElementById("price").value = "";
         }
