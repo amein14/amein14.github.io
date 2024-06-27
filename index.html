@@ -104,7 +104,7 @@
         }
 
         .hidden {
-            display: none;
+            visibility: hidden;
         }
 
         input:focus::placeholder {
@@ -137,7 +137,7 @@
     </style>
 </head>
 <body>
-    <h1 class="common-styles">Expenses2Whatsapp</h1>
+    <h1 class="common-styles">Share Expenses</h1>
     <form id="whatsappForm" class="common-styles">
         <label for="notes">Notes:</label>
         <div class="instruction">
@@ -162,6 +162,7 @@
     <script>
         let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
         let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
+        let savedDate = localStorage.getItem('savedDate') || '';
 
         function toTitleCase(str) {
             return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -169,13 +170,6 @@
 
         function updateLocalStorage(key, value) {
             localStorage.setItem(key, JSON.stringify(value));
-        }
-
-        function formatDateString(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
         }
 
         function getLocalStorage(key, defaultValue) {
@@ -214,7 +208,10 @@
                 updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
             });
 
-            updateNotesList();
+            const currentDate = new Date();
+            savedDate = formatDateString2(currentDate);
+            localStorage.setItem('savedDate', savedDate);
+            updateNotesList(); // No need to pass date
             updateLocalStorage('notesArray', notesArray);
             updateLocalStorage('pricesArray', pricesArray);
 
@@ -224,13 +221,27 @@
 
         function updateNotesList() {
             const notesListElem = document.getElementById("notesList");
+
             if (notesArray.length === 0) {
                 notesListElem.innerHTML = '';
                 notesListElem.classList.add('hidden');
             } else {
-                notesListElem.innerHTML = notesArray.map((note, index) => `<p>RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
+                notesListElem.innerHTML = notesArray.map((note, index) => `<p>[${savedDate}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
                 notesListElem.classList.remove('hidden');
             }
+        }
+
+        function formatDateString(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function formatDateString2(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            return `${day}/${month}`;
         }
 
         function generateLink() {
@@ -238,12 +249,11 @@
                 return;
             }
 
-            const currentDate = new Date();
-            const formattedDate = formatDateString(currentDate);
+            const formattedDate = formatDateString(new Date());
             let message = `${formattedDate}\n`;
 
             notesArray.forEach((note, index) => {
-                message += `RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+                message += `[${savedDate}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
             });
 
             // Include balance information
@@ -251,7 +261,7 @@
             message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
 
             const encodedMessage = encodeURIComponent(message);
-            const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+            const whatsappLink = `https://wa.me/send/?text=${encodedMessage}`;
             window.location.href = whatsappLink;
 
             // Clear notesArray after generating link
@@ -265,7 +275,7 @@
         window.onload = function() {
             let cashOnHand = getLocalStorage('cashOnHand', 0); // Ensure default value is a number
             updateBalanceDisplay(cashOnHand);
-            updateNotesList();
+            updateNotesList(); // Use saved date
             document.getElementById("notes").value = "";
             document.getElementById("price").value = "";
         }
