@@ -191,7 +191,7 @@
 
             const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
             const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
-            const currentDate = formatDateString2(new Date());
+            const currentDate = formatDate2dm(new Date());
 
             newNotes.forEach((note, index) => {
                 notesArray.push(note);
@@ -231,7 +231,7 @@
             }
         }
 
-        function formatDateString2(date) {
+        function formatDate2dm(date) {
             const day = String(date.getDate()).padStart(2, '0');
             const month = String(date.getMonth() + 1).padStart(2, '0');
             return `${day}/${month}`;
@@ -244,6 +244,7 @@
 
             //const formattedDate = formatDateString(new Date());
             //let message = `${formattedDate}\n`;
+            let message = "";
 
             notesArray.forEach((note, index) => {
                 message += `[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
