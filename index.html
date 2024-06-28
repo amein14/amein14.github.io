@@ -162,7 +162,7 @@
     <script>
         let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
         let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
-        let savedDate = localStorage.getItem('savedDate') || '';
+        let dateArray = JSON.parse(localStorage.getItem('dateArray')) || [];
 
         function toTitleCase(str) {
             return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -191,10 +191,12 @@
 
             const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
             const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
+            const currentDate = formatDateString2(new Date());
 
             newNotes.forEach((note, index) => {
                 notesArray.push(note);
                 pricesArray.push(newPrices[index]);
+                dateArray.push(currentDate);
 
                 let cashOnHand = getLocalStorage('cashOnHand', 0);
 
@@ -208,12 +210,10 @@
                 updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
             });
 
-            const currentDate = new Date();
-            savedDate = formatDateString2(currentDate);
-            localStorage.setItem('savedDate', savedDate);
-            updateNotesList(); // No need to pass date
+            updateNotesList();
             updateLocalStorage('notesArray', notesArray);
             updateLocalStorage('pricesArray', pricesArray);
+            updateLocalStorage('dateArray', dateArray);
 
             document.getElementById("notes").value = "";
             document.getElementById("price").value = "";
@@ -226,16 +226,9 @@
                 notesListElem.innerHTML = '';
                 notesListElem.classList.add('hidden');
             } else {
-                notesListElem.innerHTML = notesArray.map((note, index) => `<p>[${savedDate}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
+                notesListElem.innerHTML = notesArray.map((note, index) => `<p>[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
                 notesListElem.classList.remove('hidden');
             }
-        }
-
-        function formatDateString(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
         }
 
         function formatDateString2(date) {
@@ -249,11 +242,11 @@
                 return;
             }
 
-            const formattedDate = formatDateString(new Date());
-            let message = `${formattedDate}\n`;
+            //const formattedDate = formatDateString(new Date());
+            //let message = `${formattedDate}\n`;
 
             notesArray.forEach((note, index) => {
-                message += `[${savedDate}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+                message += `[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
             });
 
             // Include balance information
@@ -266,9 +259,11 @@
 
             // Clear notesArray after generating link
             notesArray = [];
-            pricesArray = []; // Optionally clear pricesArray if needed
+            pricesArray = [];
+            dateArray = [];
             updateLocalStorage('notesArray', notesArray);
             updateLocalStorage('pricesArray', pricesArray);
+            updateLocalStorage('dateArray', dateArray);
             updateNotesList(); // Ensure the notes list is updated to reflect the cleared arrays
         }
 
