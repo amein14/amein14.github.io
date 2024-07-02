@@ -145,11 +145,11 @@
     </style>
 </head>
 <body>
-    <h1 class="common-styles">Expenses2Whatsapp</h1>
+    <h1 class="common-styles">Expenses Tracker</h1>
     <form id="whatsappForm" class="common-styles">
         <label for="notes">Notes:</label>
         <div class="instruction">
-            Use "cash" add balance.
+            
         </div>
         <input type="text" placeholder="Separate with commas..." id="notes" name="notes" required>
         <label for="price">Price:</label>
@@ -252,7 +252,7 @@
         });
 
         let total = pricesArray.reduce((acc, price) => acc + price, 0);
-        message += `Total: RM${total.toFixed(2)}\n`;
+        message += `*Total:* RM${total.toFixed(2)}\n`;
 
         const encodedMessage = encodeURIComponent(message);
         const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
