@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expenses2Whatsapp</title>
+    <title>Main Page</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         html, body {
@@ -31,251 +31,45 @@
         }
 
         h1 {
-            text-align: left;
+            text-align: center;
             font-weight: normal;
             margin: 0;
             background-color: #444;
             color: #f5f5f5;
-        }
-
-        form {
-            background-color: #333;
-        }
-
-        label {
-            margin-top: 20px;
-            margin-bottom: 5px;
-            color: #f5f5f5;
-        }
-
-        input[type="text"],
-        input[type="number"] {
-            width: calc(100% - 10px);
-            padding: 10px 0px;
-            margin-bottom: 10px;
-            border: none;
-            border-bottom: 1px solid #f5f5f5;
-            background: transparent;
-            color: #f5f5f5;
-            font-size: 16px;
-            outline: none;
-        }
-
-        .instruction {
-            color: #aaa;
-            font-size: 10px;
-        }
-
-        .buttons-container {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .whatsapp-button,
-        .add-button {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            cursor: pointer;
-            margin-left: 10px;
-        }
-
-        .whatsapp-button i,
-        .add-button i {
-            font-size: 30px;
-        }
-
-        .whatsapp-button:hover,
-        .add-button:hover {
-            color: #25D366;
-        }
-
-        .info-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .info-container p {
-            margin: 0;
-            font-size: 16px;
-        }
-
-        .hidden {
-            visibility: hidden;
-        }
-
-        input:focus::placeholder {
-            color: transparent;
-        }
-
-        input::placeholder {
-            color: transparent;
-        }
-
-        .notes-list {
-            margin-top: 20px;
-            width: 100%;
-            background-color: #444;
             padding: 10px;
-            box-sizing: border-box;
         }
 
-        .notes-list p {
-            margin: 5px 0;
+        .link-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
         }
 
-        @media (max-width: 600px) {
-            h1 {
-                padding: 20px;
-                width: 100%;
-                box-sizing: border-box;
-            }
+        .link-container a {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 10px 0;
+            padding: 10px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #333;
+            color: #f5f5f5;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .link-container a:hover {
+            background-color: #555;
         }
     </style>
 </head>
 <body>
-    <h1 class="common-styles">Expenses2Whatsapp</h1>
-    <form id="whatsappForm" class="common-styles">
-        <label for="notes">Notes:</label>
-        <div class="instruction">
-            Use "cash" add balance.
-        </div>
-        <input type="text" placeholder="Separate with commas..." id="notes" name="notes" required>
-        <label for="price">Price:</label>
-        <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
-        <div class="info-container">
-            <p id="balanceText">Balance: RM<span id="cashOnHand"></span></p>
-            <div class="buttons-container">
-                <div class="add-button" onclick="addlist()">
-                    <i class="fa-solid fa-plus"></i>
-                </div>
-                <div class="whatsapp-button" onclick="generateLink()">
-                    <i class="fab fa-whatsapp"></i>
-                </div>
-            </div>
-        </div>
-        <div id="notesList" class="notes-list hidden"></div>
-    </form>
-    <script>
-        let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
-        let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
-        let dateArray = JSON.parse(localStorage.getItem('dateArray')) || [];
-
-        function toTitleCase(str) {
-            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-        }
-
-        function updateLocalStorage(key, value) {
-            localStorage.setItem(key, JSON.stringify(value));
-        }
-
-        function getLocalStorage(key, defaultValue) {
-            return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
-        }
-
-        function updateBalanceDisplay(cashOnHand) {
-            cashOnHand = parseFloat(cashOnHand); // Convert to number if necessary
-            document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
-        }
-
-        function addlist() {
-            const notesInput = document.getElementById("notes").value;
-            const pricesInput = document.getElementById("price").value;
-
-            if (notesInput === "" || pricesInput === "") {
-                return;
-            }
-
-            const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
-            const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
-            const currentDate = formatDate2dm(new Date());
-
-            newNotes.forEach((note, index) => {
-                notesArray.push(note);
-                pricesArray.push(newPrices[index]);
-                dateArray.push(currentDate);
-
-                let cashOnHand = getLocalStorage('cashOnHand', 0);
-
-                if (note.toLowerCase() === 'cash') {
-                    cashOnHand += newPrices[index];
-                } else {
-                    cashOnHand -= newPrices[index];
-                }
-
-                updateBalanceDisplay(cashOnHand);
-                updateLocalStorage('cashOnHand', cashOnHand.toFixed(2));
-            });
-
-            updateNotesList();
-            updateLocalStorage('notesArray', notesArray);
-            updateLocalStorage('pricesArray', pricesArray);
-            updateLocalStorage('dateArray', dateArray);
-
-            document.getElementById("notes").value = "";
-            document.getElementById("price").value = "";
-        }
-
-        function updateNotesList() {
-            const notesListElem = document.getElementById("notesList");
-
-            if (notesArray.length === 0) {
-                notesListElem.innerHTML = '';
-                notesListElem.classList.add('hidden');
-            } else {
-                notesListElem.innerHTML = notesArray.map((note, index) => `<p>[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
-                notesListElem.classList.remove('hidden');
-            }
-        }
-
-        function formatDate2dm(date) {
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            return `${day}/${month}`;
-        }
-
-        function generateLink() {
-            if (notesArray.length === 0) {
-                return;
-            }
-
-            //const formattedDate = formatDateString(new Date());
-            //let message = `${formattedDate}\n`;
-            let message = "";
-
-            notesArray.forEach((note, index) => {
-                message += `[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-            });
-
-            // Include balance information
-            let cashOnHand = getLocalStorage('cashOnHand', 0);
-            message += `Bal: RM${cashOnHand.toFixed(2)}\n`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappLink = `https://wa.me/send/?text=${encodedMessage}`;
-            //const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
-            window.location.href = whatsappLink;
-
-            // Clear notesArray after generating link
-            notesArray = [];
-            pricesArray = [];
-            dateArray = [];
-            updateLocalStorage('notesArray', notesArray);
-            updateLocalStorage('pricesArray', pricesArray);
-            updateLocalStorage('dateArray', dateArray);
-            updateNotesList(); // Ensure the notes list is updated to reflect the cleared arrays
-        }
-
-        window.onload = function() {
-            let cashOnHand = getLocalStorage('cashOnHand', 0); // Ensure default value is a number
-            updateBalanceDisplay(cashOnHand);
-            updateNotesList(); // Use saved date
-            document.getElementById("notes").value = "";
-            document.getElementById("price").value = "";
-        }
-    </script>
+    <h1 class="common-styles">Expense Dashboard</h1>
+    <div class="link-container common-styles">
+        <a target="_self" href="https://amein14.github.io/expense_tracker.html">Expense Tracker</a>
+        <a target="_self" href="https://amein14.github.io/expense2whatsapp.html">Expense2Whatsapp</a>
+    </div>
 </body>
 </html>
