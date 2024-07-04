@@ -289,15 +289,21 @@ function saveToFile() {
     let total = pricesArray.reduce((acc, price) => acc + price, 0);
     message += `*Total:* RM${total.toFixed(2)}\n`;
 
+    // Extract the first and last dates
+    let firstDate = dateArray[0].split('/').reverse().join('');
+    let lastDate = dateArray[dateArray.length - 1].split('/').reverse().join('');
+
+    const fileName = `Expense_${firstDate}-${lastDate}.txt`;
     const blob = new Blob([message], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${formatDateDM(new Date())}.txt`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
 }
+ 
 
     window.onload = function() {
         updateTotalDisplay();
