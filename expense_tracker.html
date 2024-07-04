@@ -170,20 +170,20 @@
     </form>
 
 <script>
-    let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
-    let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
-    let dateArray = JSON.parse(localStorage.getItem('dateArray')) || [];
+    let notesArray = JSON.parse(localStorage.getItem('expenseTracker_notesArray')) || [];
+    let pricesArray = JSON.parse(localStorage.getItem('expenseTracker_pricesArray')) || [];
+    let dateArray = JSON.parse(localStorage.getItem('expenseTracker_dateArray')) || [];
 
     function toTitleCase(str) {
         return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
     function updateLocalStorage(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
+        localStorage.setItem('expenseTracker_' + key, JSON.stringify(value));
     }
 
     function getLocalStorage(key, defaultValue) {
-        return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
+        return parseFloat(JSON.parse(localStorage.getItem('expenseTracker_' + key))) || defaultValue;
     }
 
     function updateTotalDisplay() {
@@ -277,6 +277,5 @@
         document.getElementById('updateTime').innerText = '2024-06-27T12:00:00Z'; // Update this manually with the correct timestamp
     }
 </script>
-
 </body>
 </html>
