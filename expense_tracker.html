@@ -163,13 +163,12 @@
                 <div class="add-button" onclick="addlist()">
                     <i class="fa-solid fa-plus"></i>
                 </div>
+		    <div class="save-button" onclick="saveToFile()">
+		    <i class="fa-regular fa-circle-down"></i>
+		</div>
                 <div class="whatsapp-button" onclick="generateLink()">
                     <i class="fab fa-whatsapp"></i>
                 </div>
-		<div class="save-button" onclick="saveToFile()">
-			<i class="fas fa-download"></i>
-			  </div>
- 
             </div>
         </div>
         <div id="notesList" class="notes-list hidden"></div>
@@ -291,7 +290,7 @@ function saveToFile() {
     });
 
     let total = pricesArray.reduce((acc, price) => acc + price, 0);
-    message += `*Total:* RM${total.toFixed(2)}\n`;
+    message += `Total: RM${total.toFixed(2)}\n`;
 
     // Extract the first and last dates
     let firstDate = dateArray[0].split('/').reverse().join('');
