@@ -73,7 +73,8 @@
         }
 
         .whatsapp-button,
-        .add-button {
+        .add-button,
+        .save-button {
             display: flex;
             justify-content: flex-end;
             align-items: center;
@@ -82,14 +83,16 @@
         }
 
         .whatsapp-button i,
-        .add-button i {
+        .add-button i,
+        .save-button i {
             font-size: 30px;
         }
 
         .whatsapp-button:hover,
-        .add-button:hover {
+        .add-button:hover,
+        .save-button:hover {
             color: #25D366;
-        }
+	}
 
         .info-container {
             display: flex;
@@ -163,6 +166,10 @@
                 <div class="whatsapp-button" onclick="generateLink()">
                     <i class="fab fa-whatsapp"></i>
                 </div>
+		<div class="save-button" onclick="saveToFile()">
+                    <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                </div>
+ 
             </div>
         </div>
         <div id="notesList" class="notes-list hidden"></div>
@@ -268,6 +275,29 @@
         updateNotesList();
         updateTotalDisplay(); // Ensure the total is updated to reflect the cleared arrays
     }
+function saveToFile() {
+    if (notesArray.length === 0) {
+        return;
+    }
+
+    let message = "";
+
+    notesArray.forEach((note, index) => {
+        message += `[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+    });
+
+    let total = pricesArray.reduce((acc, price) => acc + price, 0);
+    message += `*Total:* RM${total.toFixed(2)}\n`;
+
+    const blob = new Blob([message], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${formatDateDM(new Date())}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
 
     window.onload = function() {
         updateTotalDisplay();
