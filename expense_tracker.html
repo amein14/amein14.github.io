@@ -147,7 +147,7 @@
 <body>
     <h1 class="common-styles">Expenses Tracker</h1>
     <form id="whatsappForm" class="common-styles">
-        <label for="notes">Notes:</label>
+        <label for="notes">Expenses:</label>
         <div class="instruction">
             
         </div>
@@ -155,7 +155,7 @@
         <label for="price">Price:</label>
         <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
         <div class="info-container">
-            <p id="balanceText">Current Total: RM<span id="cashOnHand"></span></p>
+            <p id="balanceText">Total Expenses: RM<span id="cashOnHand"></span></p>
             <div class="buttons-container">
                 <div class="add-button" onclick="addlist()">
                     <i class="fa-solid fa-plus"></i>
@@ -274,7 +274,7 @@
         updateNotesList();
 
         // Display the last updated timestamp
-        document.getElementById('updateTime').innerText = '2024-06-27T12:00:00Z'; // Update this manually with the correct timestamp
+        document.getElementById('updateTime').innerText = '04-07-2024T17:00:00Z'; // Update this manually with the correct timestamp
     }
 </script>
 </body>
