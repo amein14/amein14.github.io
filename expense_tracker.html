@@ -236,7 +236,8 @@
             notesListElem.innerHTML = '';
             notesListElem.classList.add('hidden');
         } else {
-            notesListElem.innerHTML = notesArray.map((note, index) => `<p>[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
+		const date = dateArray[index].split('/').slice(0, 2).join('/'); 
+            notesListElem.innerHTML = notesArray.map((note, index) => `<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`).join('');
             notesListElem.classList.remove('hidden');
         }
     }
