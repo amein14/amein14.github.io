@@ -256,7 +256,7 @@ function formatDateDMY(date) {
 
         notesArray.forEach((note, index) => {
 		const date = dateArray[index].split('/').slice(0, 2).join('/');
-            message += `[${date[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+            message += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
         });
 
         let total = pricesArray.reduce((acc, price) => acc + price, 0);
