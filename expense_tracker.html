@@ -215,7 +215,7 @@
         });
 
         const currentDate = new Date();
-        const formattedDate = formatDateDM(currentDate);
+        const formattedDate = formatDateDMY(currentDate);
         dateArray.push(formattedDate);
 
         updateNotesList();
@@ -240,13 +240,13 @@
             notesListElem.classList.remove('hidden');
         }
     }
-
-    function formatDateDM(date) {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        return `${day}/${month}`;
-    }
-
+function formatDateDMY(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+} 
+    
     function generateLink() {
         if (notesArray.length === 0) {
             return;
@@ -255,7 +255,8 @@
         let message = "";
 
         notesArray.forEach((note, index) => {
-            message += `[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+		const date = dateArray[index].split('/').slice(0, 2).join('/');
+            message += `[${date[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
         });
 
         let total = pricesArray.reduce((acc, price) => acc + price, 0);
