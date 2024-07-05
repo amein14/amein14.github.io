@@ -296,7 +296,7 @@ function updateNotesList() {
     } else {
         notesListElem.innerHTML = notesArray.map((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            const noteClass = typesArray[index] === 'cash' ? 'cash-note' : 'bank-note';
+            const noteClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
             return `<p class="${noteClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
         }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
         notesListElem.classList.remove('hidden');
