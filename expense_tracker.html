@@ -151,8 +151,8 @@
         }
 		
 		#balanceText {
-		  font-weight: bold;
-		}
+  font-weight: bold;
+}
     </style>
 </head>
 <body>
@@ -179,7 +179,7 @@
             </div>
         </div>
         <div id="notesList" class="notes-list hidden">
-            <p id="balanceText">Total: RM<span id="cashOnHand"></span></p>
+            <p id="balanceText">Total: RM<span id="totalSpend"></span></p>
         </div>
 
         <!-- <div class="timestamp">Code Updated at: <span id="updateTime"></span></div> -->
@@ -204,7 +204,7 @@
 
     function updateTotalDisplay() {
         let total = pricesArray.reduce((acc, price) => acc + price, 0);
-        document.getElementById("cashOnHand").innerText = total.toFixed(2);
+        document.getElementById("totalSpend").innerText = total.toFixed(2);
     }
 
     function addlist() {
@@ -242,13 +242,13 @@
         const notesListElem = document.getElementById("notesList");
 
         if (notesArray.length === 0) {
-            notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="cashOnHand"></span></p>';
+            notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
             notesListElem.classList.add('hidden');
         } else {
             notesListElem.innerHTML = notesArray.map((note, index) => {
                 const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-                return <p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>;
-            }).join('') + '<p id="balanceText">Total: RM<span id="cashOnHand"></span></p>';
+                return `<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
+            }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
             notesListElem.classList.remove('hidden');
         }
         updateTotalDisplay(); // Update the total display after updating the notes list
@@ -258,7 +258,7 @@
         const day = String(date.getDate()).padStart(2, '0');
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const year = date.getFullYear();
-        return ${day}/${month}/${year};
+        return `${day}/${month}/${year}`;
     }
 
     function generateLink() {
@@ -270,14 +270,14 @@
 
         notesArray.forEach((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for message
-            message += [${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n;
+            message += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
         });
 
         let total = pricesArray.reduce((acc, price) => acc + price, 0);
-        message += *Total:* RM${total.toFixed(2)}\n;
+        message += `*Total:* RM${total.toFixed(2)}\n`;
 
         const encodedMessage = encodeURIComponent(message);
-        const whatsappLink = whatsapp://send/?text=${encodedMessage};
+        const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
         window.location.href = whatsappLink;
 
         // Clear arrays after generating link
@@ -300,18 +300,18 @@
 
         notesArray.forEach((note, index) => {
             const date = dateArray[index]; // Use full date for file content
-            content += [${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n;
+            content += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
         });
 
         let total = pricesArray.reduce((acc, price) => acc + price, 0);
-        content += Total: RM${total.toFixed(2)}\n;
+        content += `Total: RM${total.toFixed(2)}\n`;
 
         const blob = new Blob([content], { type: 'text/plain' });
         const a = document.createElement('a');
         const firstDate = dateArray[0].split('/').join('');
         const lastDate = dateArray[dateArray.length - 1].split('/').join('');
         a.href = URL.createObjectURL(blob);
-        a.download = Expense_${firstDate}-${lastDate}.txt;
+        a.download = `Expense_${firstDate}-${lastDate}.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -326,5 +326,3 @@
 </script>
 </body>
 </html>
-
-
