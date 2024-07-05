@@ -248,7 +248,7 @@ function updateNotesList() {
     } else {
         notesListElem.innerHTML = notesArray.map((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            return `<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
+            return `<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p><br><p id="balanceText">Total: RM<span id="cashOnHand"></span></p>`;
         }).join('');
         notesListElem.classList.remove('hidden');
     }
