@@ -237,22 +237,22 @@
         document.getElementById("notes").value = "";
         document.getElementById("price").value = "";
     }
+function updateNotesList() {
+    const notesListElem = document.getElementById("notesList");
 
-    function updateNotesList() {
-        const notesListElem = document.getElementById("notesList");
-
-        if (notesArray.length === 0) {
-            notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
-            notesListElem.classList.add('hidden');
-        } else {
-            notesListElem.innerHTML = notesArray.map((note, index) => {
-                const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-                return '<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>';
-            }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
-            notesListElem.classList.remove('hidden');
-        }
-        updateTotalDisplay(); // Update the total display after updating the notes list
+    if (notesArray.length === 0) {
+        notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
+        notesListElem.classList.add('hidden');
+    } else {
+        notesListElem.innerHTML = notesArray.map((note, index) => {
+            const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
+            return `<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
+        }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
+        notesListElem.classList.remove('hidden');
     }
+    updateTotalDisplay(); // Update the total display after updating the notes list
+}
+
 
     function formatDateDMY(date) {
         const day = String(date.getDate()).padStart(2, '0');
