@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expenses Tracker</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Roboto, sans-serif;
+            background-color: #1e1e1e;
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .common-styles {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: left;
+            font-weight: normal;
+            margin: 0;
+            background-color: #444;
+            color: #f5f5f5;
+        }
+
+        form {
+            background-color: #333;
+        }
+
+        label {
+            margin-top: 20px;
+            margin-bottom: 5px;
+            color: #f5f5f5;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 10px 0px;
+            margin-bottom: 10px;
+            border: none;
+            border-bottom: 1px solid #f5f5f578;
+            background: transparent;
+            color: #f5f5f5;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .instruction {
+            color: #aaa;
+            font-size: 10px;
+        }
+
+        .buttons-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .whatsapp-button,
+        .add-button,
+        .save-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+
+        .whatsapp-button i,
+        .add-button i {
+            font-size: 30px;
+        }
+		
+		.save-button i {
+            font-size: 27px;
+        }
+
+        .whatsapp-button:hover,
+        .add-button:hover,
+        .save-button:hover {
+            color: #25D366;
+        }
+
+        .info-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .info-container p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        input:focus::placeholder {
+            color: transparent;
+        }
+
+        input::placeholder {
+            color: transparent;
+        }
+
+        .notes-list {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #444;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .notes-list p {
+            margin: 5px 0;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                padding: 20px;
+                width: 100%;
+                box-sizing: border-box;
+            }
+        }
+
+        .timestamp {
+            margin-top: 10px;
+            font-size: 10px;
+            color: #aaa;
+            text-align: right;
+            font-style: italic;
+        }
+
+        #balanceText {
+            font-weight: bold;
+        }
+
+        .cash-label {
+            color: #7efb7e; /* Green for Cash */
+        }
+
+        .bank-label {
+            color: #3cceff; /* Blue for Bank */
+        }
+
+        .cash-note {
+            color: #7efb7e;
+        }
+
+        .bank-note {
+            color: #3cceff;
+        }
+    </style>
+</head>
+<body>
+    <h1 class="common-styles">Expenses Tracker</h1>
+    <form id="whatsappForm" class="common-styles">
+        <div class="expence_account">
+            <label for="notes">Expenses:</label>
+            <label class="cash-label"><input type="checkbox" name="account" id="cashCheckbox" onclick="selectAccount(this)">Cash</label>
+            <label class="bank-label"><input type="checkbox" name="account" id="bankCheckbox" onclick="selectAccount(this)">Bank</label>
+        </div>
+        <div class="instruction"></div>
+        <input type="text" placeholder="Separate with commas..." id="notes" name="notes">
+        <label for="price">Price:</label>
+        <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
+        <div class="info-container">
+            <p id="balanceCash">Cash Bal: RM<span id="cashOnHand">0.00</span></p>
+            <div class="buttons-container">
+                <div class="add-button" onclick="addlist()">
+                    <i class="fa-solid fa-plus"></i>
+                </div>
+                <div class="save-button" onclick="saveToFile()">
+                    <i class="fa-regular fa-circle-down"></i>
+                </div>
+                <div class="whatsapp-button" onclick="generateLink()">
+                    <i class="fab fa-whatsapp"></i>
+                </div>
+            </div>
+        </div>
+        <div id="notesList" class="notes-list hidden">
+            <p id="balanceText">Total: RM<span id="totalSpend">0.00</span></p>
+        </div>
+    </form>
+
+<script>
+    let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
+    let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
+    let dateArray = JSON.parse(localStorage.getItem('dateArray')) || [];
+    let typesArray = JSON.parse(localStorage.getItem('typesArray')) || [];
+    let cashOnHand = getLocalStorage('cashOnHand', 0);
+    let totalSpend = getLocalStorage('totalSpend', 0);
+
+    function toTitleCase(str) {
+        return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    }
+
+    function updateLocalStorage(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function getLocalStorage(key, defaultValue) {
+        return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
+    }
+
+    function updateTotalDisplay() {
+        document.getElementById("totalSpend").innerText = totalSpend.toFixed(2);
+        document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
+    }
+
+    function selectAccount(checkbox) {
+        var checkboxes = document.getElementsByName('account');
+        checkboxes.forEach((item) => {
+            if (item !== checkbox) item.checked = false;
+        });
+    }
+
+    function addlist() {
+        const notesInput = document.getElementById("notes").value;
+        const pricesInput = document.getElementById("price").value;
+        const cashChecked = document.getElementById("cashCheckbox").checked;
+        const bankChecked = document.getElementById("bankCheckbox").checked;
+
+        if (pricesInput === "") {
+            return;
+        }
+
+        const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+		if (notesInput === "" && cashChecked) {
+			newPrices.forEach(price => {
+				cashOnHand += price;
+			});
+			updateLocalStorage('cashOnHand', cashOnHand);
+			updateTotalDisplay();
+			document.getElementById("price").value = ""; // Clear the price input
+			return; // Return after clearing the input
+			}
+
+			
+			
+        if (notesInput !== "") {
+            const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
+            const currentDate = new Date();
+            const formattedDate = formatDateDMY(currentDate);
+            const noteType = cashChecked ? 'cash' : 'bank';
+
+            newNotes.forEach((note, index) => {
+                notesArray.push(note);
+                pricesArray.push(newPrices[index]);
+                dateArray.push(formattedDate);
+                typesArray.push(noteType);
+                if (cashChecked) {
+                    cashOnHand -= newPrices[index];
+                }
+                totalSpend += newPrices[index];
+            });
+
+            updateLocalStorage('notesArray', notesArray);
+            updateLocalStorage('pricesArray', pricesArray);
+            updateLocalStorage('dateArray', dateArray);
+            updateLocalStorage('typesArray', typesArray);
+            updateLocalStorage('cashOnHand', cashOnHand);
+            updateLocalStorage('totalSpend', totalSpend);
+
+            updateNotesList();
+            updateTotalDisplay();
+
+            document.getElementById("notes").value = "";
+            document.getElementById("price").value = "";
+        }
+    }
+
+    function updateNotesList() {
+        const notesListElem = document.getElementById("notesList");
+        if (notesArray.length === 0) {
+            notesListElem.classList.add('hidden');
+            notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend">0.00</span></p>';
+        } else {
+            notesListElem.innerHTML = notesArray.map((note, index) => {
+                const noteClass = typesArray[index] === 'cash' ? 'cash-note' : 'bank-note';
+				const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
+                return `<p class="${noteClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
+            }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
+            notesListElem.classList.remove('hidden');
+        }
+        updateTotalDisplay(); // Update the total display after updating the notes list
+    }
+
+    function formatDateDMY(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    function generateLink() {
+        if (notesArray.length === 0) {
+            return;
+        }
+
+        let message = "";
+
+        notesArray.forEach((note, index) => {
+            const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for message
+            message += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+        });
+
+        let total = pricesArray.reduce((acc, price) => acc + price, 0);
+        message += `*Total:* RM${total.toFixed(2)}\n`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+        window.location.href = whatsappLink;
+
+        // Clear arrays after generating link
+        notesArray = [];
+        pricesArray = [];
+        dateArray = [];
+        typesArray = [];
+        totalSpend = 0;
+        updateLocalStorage('notesArray', notesArray);
+        updateLocalStorage('pricesArray', pricesArray);
+        updateLocalStorage('dateArray', dateArray);
+        updateLocalStorage('typesArray', typesArray);
+        updateLocalStorage('totalSpend', totalSpend);
+        updateNotesList();
+        updateTotalDisplay(); // Ensure the total is updated to reflect the cleared arrays
+    }
+
+    function saveToFile() {
+        if (notesArray.length === 0) {
+            return;
+        }
+
+        let content = "";
+
+        notesArray.forEach((note, index) => {
+            const date = dateArray[index]; // Use full date for file content
+            content += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+        });
+
+        let total = pricesArray.reduce((acc, price) => acc + price, 0);
+        content += `Total: RM${total.toFixed(2)}\n`;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const a = document.createElement('a');
+        const firstDate = dateArray[0].split('/').join('');
+        const lastDate = dateArray[dateArray.length - 1].split('/').join('');
+        a.href = URL.createObjectURL(blob);
+        a.download = `Expense_${firstDate}-${lastDate}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    window.onload = function() {
+        cashOnHand = getLocalStorage('cashOnHand', 0);
+        totalSpend = getLocalStorage('totalSpend', 0);
+        updateTotalDisplay();
+        updateNotesList();
+    }
+</script>
+</body>
+</html>
