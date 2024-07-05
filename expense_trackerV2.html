@@ -234,61 +234,59 @@
         });
     }
 
-    function addlist() {
-        const notesInput = document.getElementById("notes").value;
-        const pricesInput = document.getElementById("price").value;
-        const cashChecked = document.getElementById("cashCheckbox").checked;
-        const bankChecked = document.getElementById("bankCheckbox").checked;
+function addlist() {
+    const notesInput = document.getElementById("notes").value;
+    const pricesInput = document.getElementById("price").value;
+    const cashChecked = document.getElementById("cashCheckbox").checked;
+    const bankChecked = document.getElementById("bankCheckbox").checked;
 
-        if (pricesInput === "") {
-            return;
-        }
-
-        const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
-
-		if (notesInput === "" && cashChecked) {
-			newPrices.forEach(price => {
-				cashOnHand += price;
-			});
-			updateLocalStorage('cashOnHand', cashOnHand);
-			updateTotalDisplay();
-			document.getElementById("price").value = ""; // Clear the price input
-			return; // Return after clearing the input
-			}
-
-			
-			
-        if (notesInput !== "") {
-            const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
-            const currentDate = new Date();
-            const formattedDate = formatDateDMY(currentDate);
-            const noteType = cashChecked ? 'cash' : 'bank';
-
-            newNotes.forEach((note, index) => {
-                notesArray.push(note);
-                pricesArray.push(newPrices[index]);
-                dateArray.push(formattedDate);
-                typesArray.push(noteType);
-                if (cashChecked) {
-                    cashOnHand -= newPrices[index];
-                }
-                totalSpend += newPrices[index];
-            });
-
-            updateLocalStorage('notesArray', notesArray);
-            updateLocalStorage('pricesArray', pricesArray);
-            updateLocalStorage('dateArray', dateArray);
-            updateLocalStorage('typesArray', typesArray);
-            updateLocalStorage('cashOnHand', cashOnHand);
-            updateLocalStorage('totalSpend', totalSpend);
-
-            updateNotesList();
-            updateTotalDisplay();
-
-            document.getElementById("notes").value = "";
-            document.getElementById("price").value = "";
-        }
+    if (pricesInput === "") {
+        return;
     }
+
+    const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
+
+    if (notesInput === "" && cashChecked) {
+        newPrices.forEach(price => {
+            cashOnHand += price;
+        });
+        updateLocalStorage('cashOnHand', cashOnHand);
+        updateTotalDisplay();
+        document.getElementById("price").value = ""; // Clear the price input
+        return; // Return after clearing the input
+    }
+
+    if (notesInput !== "") {
+        const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
+        const currentDate = new Date();
+        const formattedDate = formatDateDMY(currentDate);
+        const noteType = cashChecked ? 'Cash' : 'Bank';
+
+        newNotes.forEach((note, index) => {
+            notesArray.push(note);
+            pricesArray.push(newPrices[index]);
+            dateArray.push(formattedDate);
+            typesArray.push(noteType);
+            if (cashChecked) {
+                cashOnHand -= newPrices[index];
+            }
+            totalSpend += newPrices[index];
+        });
+
+        updateLocalStorage('notesArray', notesArray);
+        updateLocalStorage('pricesArray', pricesArray);
+        updateLocalStorage('dateArray', dateArray);
+        updateLocalStorage('typesArray', typesArray);
+        updateLocalStorage('cashOnHand', cashOnHand);
+        updateLocalStorage('totalSpend', totalSpend);
+
+        updateNotesList();
+        updateTotalDisplay();
+
+        document.getElementById("notes").value = "";
+        document.getElementById("price").value = "";
+    }
+}
 
     function updateNotesList() {
         const notesListElem = document.getElementById("notesList");
@@ -347,31 +345,34 @@
         updateTotalDisplay(); // Ensure the total is updated to reflect the cleared arrays
     }
 
-    function saveToFile() {
-        if (notesArray.length === 0) {
-            return;
-        }
-
-        let content = "";
-
-        notesArray.forEach((note, index) => {
-            const date = dateArray[index]; // Use full date for file content
-            content += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-        });
-
-        let total = pricesArray.reduce((acc, price) => acc + price, 0);
-        content += `Total: RM${total.toFixed(2)}\n`;
-
-        const blob = new Blob([content], { type: 'text/plain' });
-        const a = document.createElement('a');
-        const firstDate = dateArray[0].split('/').join('');
-        const lastDate = dateArray[dateArray.length - 1].split('/').join('');
-        a.href = URL.createObjectURL(blob);
-        a.download = `Expense_${firstDate}-${lastDate}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+function saveToFile() {
+    if (notesArray.length === 0) {
+        return;
     }
+
+    let content = "";
+
+    notesArray.forEach((note, index) => {
+        const date = dateArray[index]; // Use full date for file content
+        const transactionType = typesArray[index];
+        content += `[${date}][${transactionType}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+    });
+
+    let total = pricesArray.reduce((acc, price) => acc + price, 0);
+    let cashOnHand = getLocalStorage('cashOnHand', 0);
+    content += `Total: RM${total.toFixed(2)}\nCash Balance: RM${cashOnHand.toFixed(2)}`;
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const a = document.createElement('a');
+    const firstDate = dateArray[0].split('/').join('');
+    const lastDate = dateArray[dateArray.length - 1].split('/').join('');
+    a.href = URL.createObjectURL(blob);
+    a.download = `Expense_${firstDate}-${lastDate}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
 
     window.onload = function() {
         cashOnHand = getLocalStorage('cashOnHand', 0);
