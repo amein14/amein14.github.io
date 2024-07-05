@@ -203,10 +203,10 @@
     </form>
 
 <script>
-    let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
-    let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
-    let dateArray = JSON.parse(localStorage.getItem('dateArray')) || [];
-    let typesArray = JSON.parse(localStorage.getItem('typesArray')) || [];
+    let notesArray = JSON.parse(localStorage.getItem('expenseTracker_notesArray')) || [];
+    let pricesArray = JSON.parse(localStorage.getItem('expenseTracker_pricesArray')) || [];
+    let dateArray = JSON.parse(localStorage.getItem('expenseTracker_dateArray')) || [];
+    let typesArray = JSON.parse(localStorage.getItem('expenseTracker_typesArray')) || [];
     let cashOnHand = getLocalStorage('cashOnHand', 0);
     let totalSpend = getLocalStorage('totalSpend', 0);
 
@@ -215,11 +215,11 @@
     }
 
     function updateLocalStorage(key, value) {
-        localStorage.setItem(key, JSON.stringify(value));
+        localStorage.setItem('expenseTracker_' + key, JSON.stringify(value));
     }
 
     function getLocalStorage(key, defaultValue) {
-        return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
+        return parseFloat(JSON.parse(localStorage.getItem('expenseTracker_' + key))) || defaultValue;
     }
 
     function updateTotalDisplay() {
