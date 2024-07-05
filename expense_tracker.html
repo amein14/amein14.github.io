@@ -50,11 +50,11 @@
 
         input[type="text"],
         input[type="number"] {
-            width: calc(100% - 10px);
+            width: 100%;
             padding: 10px 0px;
             margin-bottom: 10px;
             border: none;
-            border-bottom: 1px solid #f5f5f5;
+            border-bottom: 1px solid #f5f5f578;
             background: transparent;
             color: #f5f5f5;
             font-size: 16px;
@@ -69,7 +69,7 @@
         .buttons-container {
             display: flex;
             justify-content: flex-end;
-            align-items: center;
+			width: 100%;
         }
 
         .whatsapp-button,
@@ -86,16 +86,17 @@
         .add-button i {
             font-size: 30px;
         }
-	    
+		
+
         .save-button i {
-            font-size: 28px;
-         }
-	    
+            font-size: 26px;
+        }
+
         .whatsapp-button:hover,
         .add-button:hover,
         .save-button:hover {
             color: #25D366;
-	}
+        }
 
         .info-container {
             display: flex;
@@ -107,16 +108,10 @@
         .info-container p {
             margin: 0;
             font-size: 16px;
-	    visibility: hidden;
-        }
-.notes-list p {
-            margin: 0;
-            font-size: 16px;
-
         }
 
         .hidden {
-            display:none;
+            display: none;
         }
 
         input:focus::placeholder {
@@ -148,12 +143,16 @@
         }
 
         .timestamp {
-			margin-top: 10px;
+            margin-top: 10px;
             font-size: 10px;
             color: #aaa;
-			text-align: right;
-			font-style: italic;
+            text-align: right;
+            font-style: italic;
         }
+		
+		#balanceText {
+		  font-weight: bold;
+		}
     </style>
 </head>
 <body>
@@ -167,41 +166,40 @@
         <label for="price">Price:</label>
         <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
         <div class="info-container">
-		<div class="buttons-container">
+            <div class="buttons-container">
                 <div class="add-button" onclick="addlist()">
                     <i class="fa-solid fa-plus"></i>
                 </div>
-		    <div class="save-button" onclick="saveToFile()">
-		    <i class="fa-regular fa-circle-down"></i>
-		</div>
+                <div class="save-button" onclick="saveToFile()">
+                    <i class="fa-regular fa-circle-down"></i>
+                </div>
                 <div class="whatsapp-button" onclick="generateLink()">
                     <i class="fab fa-whatsapp"></i>
                 </div>
             </div>
         </div>
         <div id="notesList" class="notes-list hidden">
-    </div>
-	    <p id="balanceText">Total: RM<span id="cashOnHand"></span></p>
+            <p id="balanceText">Total: RM<span id="cashOnHand"></span></p>
+        </div>
 
-
-		    <div class="timestamp">Code Updated at: <span id="updateTime"></span></div>
+        <!-- <div class="timestamp">Code Updated at: <span id="updateTime"></span></div> -->
     </form>
 
 <script>
-    let notesArray = JSON.parse(localStorage.getItem('expenseTracker_notesArray')) || [];
-    let pricesArray = JSON.parse(localStorage.getItem('expenseTracker_pricesArray')) || [];
-    let dateArray = JSON.parse(localStorage.getItem('expenseTracker_dateArray')) || [];
+    let notesArray = JSON.parse(localStorage.getItem('notesArray')) || [];
+    let pricesArray = JSON.parse(localStorage.getItem('pricesArray')) || [];
+    let dateArray = JSON.parse(localStorage.getItem('dateArray')) || [];
 
     function toTitleCase(str) {
         return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 
     function updateLocalStorage(key, value) {
-        localStorage.setItem('expenseTracker_' + key, JSON.stringify(value));
+        localStorage.setItem(key, JSON.stringify(value));
     }
 
     function getLocalStorage(key, defaultValue) {
-        return parseFloat(JSON.parse(localStorage.getItem('expenseTracker_' + key))) || defaultValue;
+        return parseFloat(JSON.parse(localStorage.getItem(key))) || defaultValue;
     }
 
     function updateTotalDisplay() {
@@ -239,28 +237,30 @@
         document.getElementById("notes").value = "";
         document.getElementById("price").value = "";
     }
-function updateNotesList() {
-    const notesListElem = document.getElementById("notesList");
 
-    if (notesArray.length === 0) {
-        notesListElem.innerHTML = '';
-        notesListElem.classList.add('hidden');
-    } else {
-        notesListElem.innerHTML = notesArray.map((note, index) => {
-            const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            return `<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p><br><p id="balanceText">Total: RM<span id="cashOnHand"></span></p>`;
-        }).join('');
-        notesListElem.classList.remove('hidden');
+    function updateNotesList() {
+        const notesListElem = document.getElementById("notesList");
+
+        if (notesArray.length === 0) {
+            notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="cashOnHand"></span></p>';
+            notesListElem.classList.add('hidden');
+        } else {
+            notesListElem.innerHTML = notesArray.map((note, index) => {
+                const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
+                return <p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>;
+            }).join('') + '<p id="balanceText">Total: RM<span id="cashOnHand"></span></p>';
+            notesListElem.classList.remove('hidden');
+        }
+        updateTotalDisplay(); // Update the total display after updating the notes list
     }
-}
-    
-function formatDateDMY(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-} 
-    
+
+    function formatDateDMY(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return ${day}/${month}/${year};
+    }
+
     function generateLink() {
         if (notesArray.length === 0) {
             return;
@@ -269,15 +269,15 @@ function formatDateDMY(date) {
         let message = "";
 
         notesArray.forEach((note, index) => {
-		const date = dateArray[index].split('/').slice(0, 2).join('/');
-            message += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+            const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for message
+            message += [${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n;
         });
 
         let total = pricesArray.reduce((acc, price) => acc + price, 0);
-        message += `*Total:* RM${total.toFixed(2)}\n`;
+        message += *Total:* RM${total.toFixed(2)}\n;
 
         const encodedMessage = encodeURIComponent(message);
-        const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+        const whatsappLink = whatsapp://send/?text=${encodedMessage};
         window.location.href = whatsappLink;
 
         // Clear arrays after generating link
@@ -290,43 +290,41 @@ function formatDateDMY(date) {
         updateNotesList();
         updateTotalDisplay(); // Ensure the total is updated to reflect the cleared arrays
     }
-function saveToFile() {
-    if (notesArray.length === 0) {
-        return;
+
+    function saveToFile() {
+        if (notesArray.length === 0) {
+            return;
+        }
+
+        let content = "";
+
+        notesArray.forEach((note, index) => {
+            const date = dateArray[index]; // Use full date for file content
+            content += [${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n;
+        });
+
+        let total = pricesArray.reduce((acc, price) => acc + price, 0);
+        content += Total: RM${total.toFixed(2)}\n;
+
+        const blob = new Blob([content], { type: 'text/plain' });
+        const a = document.createElement('a');
+        const firstDate = dateArray[0].split('/').join('');
+        const lastDate = dateArray[dateArray.length - 1].split('/').join('');
+        a.href = URL.createObjectURL(blob);
+        a.download = Expense_${firstDate}-${lastDate}.txt;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     }
-
-    let message = "";
-
-    notesArray.forEach((note, index) => {
-        message += `[${dateArray[index]}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-    });
-
-    let total = pricesArray.reduce((acc, price) => acc + price, 0);
-    message += `Total: RM${total.toFixed(2)}\n`;
-
-    // Extract the first and last dates
-    let firstDate = dateArray[0].split('/').reverse().join('');
-    let lastDate = dateArray[dateArray.length - 1].split('/').reverse().join('');
-
-    const fileName = `Expense_${firstDate}-${lastDate}.txt`;
-    const blob = new Blob([message], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
- 
 
     window.onload = function() {
         updateTotalDisplay();
         updateNotesList();
 
-        // Display the last updated timestamp
-        document.getElementById('updateTime').innerText = '04-07-2024T17:00:00Z'; // Update this manually with the correct timestamp
+        <!-- document.getElementById('updateTime').innerText = '2024-06-27T12:00:00Z'; // Update this manually with the correct timestamp -->
     }
 </script>
 </body>
 </html>
+
+
