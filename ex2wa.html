@@ -201,6 +201,7 @@
             <label for="notes">Expenses:</label>
             <label class="cash-label"><input type="checkbox" name="account" id="cashCheckbox" onclick="selectAccount(this)">Cash</label>
             <label class="bank-label"><input type="checkbox" name="account" id="bankCheckbox" onclick="selectAccount(this)">Online</label>
+	    <label><input type="checkbox" id="showDeleteCheckbox" onclick="toggleDeleteButtons()">X</label> 
         </div>
         <div class="instruction">
 		To update cash balance, select "Cash" and enter value in price input. 
@@ -238,6 +239,9 @@
     function toTitleCase(str) {
         return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
+function toggleDeleteButtons() {
+    updateNotesList(); // Re-render the notes list to show or hide delete buttons
+}
 
     function updateLocalStorage(key, value) {
         localStorage.setItem('expense_' + key, JSON.stringify(value));
@@ -314,7 +318,7 @@ function addlist() {
 }
 function updateNotesList() {
     const notesListElem = document.getElementById("notesList");
-
+    const showDelete = document.getElementById("showDeleteCheckbox").checked;
     if (notesArray.length === 0) {
         notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
         notesListElem.classList.add('hidden');
