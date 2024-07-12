@@ -160,7 +160,9 @@
         .bank-label {
             color: #3cceff; /* Blue for Bank */
         }
-
+.delete-label {
+            color: #ff0000; /* Blue for Bank */
+}
         .cash-note {
             color: #7efb7e;
         }
@@ -201,7 +203,7 @@
             <label for="notes">Expenses:</label>
             <label class="cash-label"><input type="checkbox" name="account" id="cashCheckbox" onclick="selectAccount(this)">Cash</label>
             <label class="bank-label"><input type="checkbox" name="account" id="bankCheckbox" onclick="selectAccount(this)">Online</label>
-	    <label><input type="checkbox" id="showDeleteCheckbox" onclick="toggleDeleteButtons()">X</label> 
+	    <label class="delete-label"><input type="checkbox" id="showDeleteCheckbox" onclick="toggleDeleteButtons()">X</label> 
         </div>
         <div class="instruction">
 		To update cash balance, select "Cash" and enter value in price input. 
