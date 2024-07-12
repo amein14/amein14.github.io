@@ -319,19 +319,21 @@ function addlist() {
 function updateNotesList() {
     const notesListElem = document.getElementById("notesList");
     const showDelete = document.getElementById("showDeleteCheckbox").checked;
+
     if (notesArray.length === 0) {
         notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
         notesListElem.classList.add('hidden');
     } else {
         notesListElem.innerHTML = notesArray.map((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            const noteClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
-            return `<p class="${noteClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note} <i class="fa fa-times delete-icon" onclick="deleteEntry(${index})"></i></p>`;
+            const typeClass = typesArray[index] === 'cash' ? 'cash-note' : 'bank-note';
+            return `<p class="${typeClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note} ${showDelete ? '<i class="fa fa-times delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}</p>`;
         }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
         notesListElem.classList.remove('hidden');
     }
     updateTotalDisplay(); // Update the total display after updating the notes list
 }
+
 function deleteEntry(index) {
     const deletedPrice = pricesArray[index];
     const type = typesArray[index];
