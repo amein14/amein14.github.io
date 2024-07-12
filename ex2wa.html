@@ -359,7 +359,7 @@ function deleteEntry(index) {
     typesArray.splice(index, 1);
 
     // Update cash on hand if necessary
-    if (type === 'cash') {
+    if (type === 'Cash') {
         cashOnHand += deletedPrice;
         updateLocalStorage('cashOnHand', cashOnHand);
     }
