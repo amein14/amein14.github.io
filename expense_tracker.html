@@ -153,6 +153,16 @@
 		#balanceText {
   font-weight: bold;
 }
+	    .delete-icon {
+    margin-left: 10px;
+    cursor: pointer;
+    color: #ff0000;
+}
+
+.delete-icon:hover {
+    color: #cc0000;
+}
+
     </style>
 </head>
 <body>
@@ -237,6 +247,7 @@
         document.getElementById("notes").value = "";
         document.getElementById("price").value = "";
     }
+
 function updateNotesList() {
     const notesListElem = document.getElementById("notesList");
 
@@ -246,7 +257,8 @@ function updateNotesList() {
     } else {
         notesListElem.innerHTML = notesArray.map((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            return `<p>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
+            const typeClass = typesArray[index] === 'cash' ? 'cash-note' : 'bank-note';
+            return `<p class="${typeClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note} <i class="fa fa-times delete-icon" onclick="deleteEntry(${index})"></i></p>`;
         }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
         notesListElem.classList.remove('hidden');
     }
@@ -290,6 +302,35 @@ function updateNotesList() {
         updateNotesList();
         updateTotalDisplay(); // Ensure the total is updated to reflect the cleared arrays
     }
+function deleteEntry(index) {
+    const deletedPrice = pricesArray[index];
+    const type = typesArray[index];
+
+    // Update arrays
+    notesArray.splice(index, 1);
+    pricesArray.splice(index, 1);
+    dateArray.splice(index, 1);
+    typesArray.splice(index, 1);
+
+    // Update cash on hand if necessary
+    if (type === 'cash') {
+        cashOnHand += deletedPrice;
+        updateLocalStorage('cashOnHand', cashOnHand);
+    }
+
+    // Update total spend
+    totalSpend -= deletedPrice;
+    updateLocalStorage('totalSpend', totalSpend);
+
+    // Update local storage
+    updateLocalStorage('notesArray', notesArray);
+    updateLocalStorage('pricesArray', pricesArray);
+    updateLocalStorage('dateArray', dateArray);
+    updateLocalStorage('typesArray', typesArray);
+
+    updateNotesList();
+    updateTotalDisplay();
+}
 
     function saveToFile() {
         if (notesArray.length === 0) {
