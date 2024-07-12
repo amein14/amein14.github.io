@@ -334,7 +334,7 @@ function updateNotesList() {
     } else {
         notesListElem.innerHTML = notesArray.map((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            const typeClass = typesArray[index] === 'cash' ? 'cash-note' : 'bank-note';
+            const typeClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
             return `
                 <div class="note-item">
                     ${showDelete ? '<i class="fa fa-times delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
