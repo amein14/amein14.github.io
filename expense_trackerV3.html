@@ -218,6 +218,7 @@
         <label for="price">Price:</label>
         <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
         <div class="info-container">
+		<i class="fa-regular fa-trash-can delete-icon" onclick="toggleDeleteButtons()"></i>
             <p id="balanceCash">Cash Bal: RM<span id="cashOnHand">0.00</span></p>
             <div class="buttons-container">
                 <div class="add-button" onclick="addlist()">
@@ -233,6 +234,7 @@
         </div>
         <div id="notesList" class="notes-list hidden">
             <p id="balanceText">Total: RM<span id="totalSpend">0.00</span></p>
+	    <p id="balanceCash">Cash Bal: RM<span id="cashOnHand">0.00</span></p> 
         </div>
     </form>
 
