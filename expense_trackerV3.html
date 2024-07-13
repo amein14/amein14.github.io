@@ -218,7 +218,7 @@
         <label for="price">Price:</label>
         <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
         <div class="info-container">
-		<i class="fa-regular fa-trash-can delete-icon" onclick="toggleDeleteButtons()"></i>
+		<label class="delete-label"><input type="checkbox" id="showDeleteCheckbox" onclick="toggleDeleteButtons()"><i class="fa-regular fa-trash-can"></i></label>
             <p id="balanceCash">Cash Bal: RM<span id="cashOnHand">0.00</span></p>
             <div class="buttons-container">
                 <div class="add-button" onclick="addlist()">
