@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expenses Tracker</title>
+    <title>Expenses Tracker V3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         html, body {
@@ -270,7 +270,6 @@ function toggleDeleteButtons() {
             if (item !== checkbox) item.checked = false;
         });
     }
-
 function addlist() {
     const notesInput = document.getElementById("notes").value;
     const pricesInput = document.getElementById("price").value;
@@ -281,12 +280,11 @@ function addlist() {
         return;
     }
 
-    const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
+    // Sum up multiple price entries
+    const totalPrice = pricesInput.split(',').reduce((acc, price) => acc + parseFloat(price.trim()), 0);
 
     if (notesInput === "" && cashChecked) {
-        newPrices.forEach(price => {
-            cashOnHand += price;
-        });
+        cashOnHand += totalPrice;
         updateLocalStorage('cashOnHand', cashOnHand);
         updateTotalDisplay();
         document.getElementById("price").value = ""; // Clear the price input
@@ -299,15 +297,15 @@ function addlist() {
         const formattedDate = formatDateDMY(currentDate);
         const noteType = cashChecked ? 'Cash' : 'Bank';
 
-        newNotes.forEach((note, index) => {
+        newNotes.forEach(note => {
             notesArray.push(note);
-            pricesArray.push(newPrices[index]);
+            pricesArray.push(totalPrice); // Push the total price
             dateArray.push(formattedDate);
             typesArray.push(noteType);
             if (cashChecked) {
-                cashOnHand -= newPrices[index];
+                cashOnHand -= totalPrice;
             }
-            totalSpend += newPrices[index];
+            totalSpend += totalPrice;
         });
 
         updateLocalStorage('notesArray', notesArray);
@@ -324,6 +322,8 @@ function addlist() {
         document.getElementById("price").value = "";
     }
 }
+
+
 function updateNotesList() {
     const notesListElem = document.getElementById("notesList");
     const showDelete = document.getElementById("showDeleteCheckbox").checked;
