@@ -340,7 +340,7 @@ function updateNotesList() {
             const typeClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
             return `
                 <div class="note-item">
-                    ${showDelete ? '<i class="fa fa-times delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
+                    ${showDelete ? '<i class="fa-regular fa-trash-can delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
                     <p class="${typeClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>
                 </div>
             `;
