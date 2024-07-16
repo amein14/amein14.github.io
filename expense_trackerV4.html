@@ -193,6 +193,7 @@
 	    display: flex;
 	    align-items: center;
 	    position: relative;
+	    border-bottom: 1px solid #444; /* Optional: Add a border for separation */
 	}
 	.notes-list p {
 	    margin: 0;
@@ -211,6 +212,14 @@
 	.delete-icon {
 	    font-size: 15px;
 	} 
+	    
+	.bg-light {
+	    background-color: #2e2e2e; /* Light background color */
+	}
+	
+	.bg-dark {
+	    background-color: #1e1e1e; /* Dark background color */
+	}	    
     </style>
 </head>
 <body>
@@ -347,10 +356,11 @@ function updateNotesList() {
         notesListElem.innerHTML = notesArray.map((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
             const typeClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
+            const bgColorClass = index % 2 === 0 ? 'bg-light' : 'bg-dark';
             return `
-                <div class="note-item">
+                <div class="note-item ${bgColorClass}">
                     <p class="${typeClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>
-		    ${showDelete ? '<i class="fa-regular fa-trash-can delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
+                    ${showDelete ? '<i class="fa-regular fa-trash-can delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
                 </div>
             `;
         }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
@@ -358,7 +368,6 @@ function updateNotesList() {
     }
     updateTotalDisplay(); // Update the total display after updating the notes list
 }
-
 
 function deleteEntry(index) {
     const deletedPrice = pricesArray[index];
