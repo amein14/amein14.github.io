@@ -209,7 +209,7 @@
     </style>
 </head>
 <body>
-    <h1 class="common-styles">Expenses Tracker</h1>
+    <h1 class="common-styles">Expenses Tracker V3</h1>
     <form id="whatsappForm" class="common-styles">
         <div class="expence_account">
             <label for="notes">Expenses:</label>
@@ -344,8 +344,8 @@ function updateNotesList() {
             const typeClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
             return `
                 <div class="note-item">
-                    ${showDelete ? '<i class="fa-regular fa-trash-can delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
                     <p class="${typeClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>
+		    ${showDelete ? '<i class="fa-regular fa-trash-can delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
                 </div>
             `;
         }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
