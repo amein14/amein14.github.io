@@ -435,9 +435,10 @@ function saveToFile() {
     let content = "";
 
     notesArray.forEach((note, index) => {
-        const date = dateArray[index]; // Use full date for file content
+	const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
+        //const date = dateArray[index]; // Use full date for file content
         const transactionType = typesArray[index];
-        content += `[${date}][${transactionType}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+        content += `[${date}][${transactionType}]RM${pricesArray[index].toFixed(2)}: ${note}\n`;
     });
 
     let total = pricesArray.reduce((acc, price) => acc + price, 0);
