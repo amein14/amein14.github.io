@@ -42,8 +42,8 @@
         }
 
         label {
-            margin-top: 20px;
-            margin-bottom: 5px;
+            /*margin-top: 20px;*/
+            /*margin-bottom: 5px;*/
             color: #f5f5f5;
         }
 
@@ -160,9 +160,9 @@
         .bank-label {
             color: #3cceff; /* Blue for Bank */
         }
-.delete-label {
-            color: #ff0000; 
-}
+	.delete-label {
+	            color: #ff0000; 
+	}
         .cash-note {
             color: #7efb7e;
         }
@@ -186,39 +186,31 @@
         } 
 	    
 
-.note-item {
-    display: flex;
-    align-items: center;
-}
-
-.note-item  {
-    margin-right: 10px;
-    cursor: pointer;
-    color: #ff0000; /* Optional: Set the color of the delete icon */
-}
-
-      .delete-icon {
-    cursor: pointer;
-    margin-left: 10px;
-    font-size: 20px;
-    color: #f5f5f5;
-}
-
-.delete-icon:hover {
-    color: #ff0000;
-}
-
-.delete-button {
-    cursor: pointer;
-    color: #ff0000;
-    margin-right: 10px;
-    font-size: 15px;
-}
-
-.hidden-delete {
-    display: none;
-}
-
+	.delete-icon:hover {
+	    color: #cc0000;
+	}
+	.note-item {
+	    display: flex;
+	    align-items: center;
+	    position: relative;
+	}
+	.notes-list p {
+	    margin: 0;
+	    line-height: 1.5;
+	}
+	.note-item .delete-icon {
+	    margin-left: 15px;
+	    cursor: pointer;
+	    color: #ff4d4d; /* Brighter red */
+	    filter: brightness(1.2); /* Increase brightness */
+	    text-shadow: 1px 1px 2px #000; /* Add shadow for better contrast */
+	    position: absolute;
+	    top: 4px;
+	    right: 0;
+	}
+	.delete-icon {
+	    font-size: 15px;
+	} 
     </style>
 </head>
 <body>
@@ -228,7 +220,7 @@
             <label for="notes">Expenses:</label>
             <label class="cash-label"><input type="checkbox" name="account" id="cashCheckbox" onclick="selectAccount(this)">Cash</label>
             <label class="bank-label"><input type="checkbox" name="account" id="bankCheckbox" onclick="selectAccount(this)">Online</label>
-          <i class="fa-regular fa-trash-can delete-icon" onclick="toggleDeleteButtons()"></i>
+	    <label class="delete-label"><input type="checkbox" id="showDeleteCheckbox" onclick="toggleDeleteButtons()">Delete</label> 
         </div>
         <div class="instruction">
 		To update cash balance, select "Cash" and enter value in price input. 
@@ -268,10 +260,7 @@
         return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     }
 function toggleDeleteButtons() {
-    const deleteButtons = document.querySelectorAll('.delete-button');
-    deleteButtons.forEach(button => {
-        button.classList.toggle('hidden-delete');
-    });
+    updateNotesList(); // Re-render the notes list to show or hide delete buttons
 }
 
     function updateLocalStorage(key, value) {
@@ -349,6 +338,7 @@ function addlist() {
 
 function updateNotesList() {
     const notesListElem = document.getElementById("notesList");
+    const showDelete = document.getElementById("showDeleteCheckbox").checked;
 
     if (notesArray.length === 0) {
         notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
@@ -356,9 +346,13 @@ function updateNotesList() {
     } else {
         notesListElem.innerHTML = notesArray.map((note, index) => {
             const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            const type = typesArray[index];
-            const noteClass = type === 'Cash' ? 'cash-note' : 'bank-note';
-            return `<p class="${noteClass}"><i class="fa-regular fa-trash-can delete-button hidden-delete" onclick="deleteEntry(${index})"></i>[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
+            const typeClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
+            return `
+                <div class="note-item">
+                    <p class="${typeClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>
+		    ${showDelete ? '<i class="fa-regular fa-trash-can delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
+                </div>
+            `;
         }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
         notesListElem.classList.remove('hidden');
     }
@@ -367,11 +361,26 @@ function updateNotesList() {
 
 
 function deleteEntry(index) {
+    const deletedPrice = pricesArray[index];
+    const type = typesArray[index];
+
+    // Update arrays
     notesArray.splice(index, 1);
     pricesArray.splice(index, 1);
     dateArray.splice(index, 1);
     typesArray.splice(index, 1);
 
+    // Update cash on hand if necessary
+    if (type === 'Cash') {
+        cashOnHand += deletedPrice;
+        updateLocalStorage('cashOnHand', cashOnHand);
+    }
+
+    // Update total spend
+    totalSpend -= deletedPrice;
+    updateLocalStorage('totalSpend', totalSpend);
+
+    // Update local storage
     updateLocalStorage('notesArray', notesArray);
     updateLocalStorage('pricesArray', pricesArray);
     updateLocalStorage('dateArray', dateArray);
@@ -431,9 +440,10 @@ function saveToFile() {
     let content = "";
 
     notesArray.forEach((note, index) => {
-        const date = dateArray[index]; // Use full date for file content
+	const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
+        //const date = dateArray[index]; // Use full date for file content
         const transactionType = typesArray[index];
-        content += `[${date}][${transactionType}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+        content += `[${date}][${transactionType}]RM${pricesArray[index].toFixed(2)}: ${note}\n`;
     });
 
     let total = pricesArray.reduce((acc, price) => acc + price, 0);
