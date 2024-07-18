@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expenses Tracker</title>
+    <title>Expenses TrackerV2</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <style>
         html, body {
@@ -14,12 +14,13 @@
 
         body {
             font-family: Roboto, sans-serif;
-            background-color: #1e1e1e;
+            background: linear-gradient(to bottom, #1e1e1e, #2e2e2e);
             color: #f5f5f5;
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            padding: 20px;
         }
 
         .common-styles {
@@ -27,37 +28,49 @@
             max-width: 400px;
             padding: 20px;
             box-sizing: border-box;
+            background-color: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         h1 {
             text-align: left;
             font-weight: normal;
-            margin: 0;
+            margin: 0 0 20px 0;
             background-color: #444;
             color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         form {
-            background-color: #333;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
 
         label {
-            margin-top: 20px;
-            margin-bottom: 5px;
+            margin-top: 10px;
             color: #f5f5f5;
         }
 
         input[type="text"],
         input[type="number"] {
             width: 100%;
-            padding: 10px 0px;
+            padding: 10px;
             margin-bottom: 10px;
-            border: none;
-            border-bottom: 1px solid #f5f5f578;
+            border: 1px solid #f5f5f578;
+            border-radius: 5px;
             background: transparent;
             color: #f5f5f5;
             font-size: 16px;
             outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus {
+            border-color: #25D366;
         }
 
         .instruction {
@@ -67,41 +80,39 @@
 
         .buttons-container {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
+            gap: 10px;
         }
 
-        .whatsapp-button,
-        .add-button,
-        .save-button {
+        .button {
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
             width: 30px;
             height: 30px;
-            margin-left: 10px;
+            padding: 5px;
+            border-radius: 50%;
+            transition: background-color 0.3s ease;
         }
 
-        .whatsapp-button i,
-        .add-button i {
-            font-size: 30px;
-        }
-		
-		.save-button i {
-            font-size: 27px;
+        .button i {
+            font-size: 20px;
+            color: #f5f5f5;
         }
 
-        .whatsapp-button:hover,
-        .add-button:hover,
-        .save-button:hover {
-            color: #25D366;
+        .button:hover {
+            background-color: #25D366;
         }
 
         .info-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 10px;
+            margin-top: 5px;
+            background-color: #464747c7;
+            padding: 10px;
+            border-radius: 5px;
         }
 
         .info-container p {
@@ -113,19 +124,9 @@
             display: none;
         }
 
-        input:focus::placeholder {
-            color: transparent;
-        }
-
-        input::placeholder {
-            color: transparent;
-        }
-
         .notes-list {
-            margin-top: 20px;
+            margin-top: 10px;
             width: 100%;
-            background-color: #444;
-            padding: 10px;
             box-sizing: border-box;
         }
 
@@ -151,6 +152,8 @@
 
         #balanceText {
             font-weight: bold;
+            border-top: 2px solid #f5f5f578;
+            padding-top: 10px;
         }
 
         .cash-label {
@@ -161,6 +164,10 @@
             color: #3cceff; /* Blue for Bank */
         }
 
+        .delete-label {
+            color: #ff0000; 
+        }
+
         .cash-note {
             color: #7efb7e;
         }
@@ -168,8 +175,8 @@
         .bank-note {
             color: #3cceff;
         }
-	    
-	.expence_account {
+
+        .expence_account {
             display: flex;
             gap: 10px;
         }
@@ -178,224 +185,282 @@
             display: flex;
             align-items: center;
         }
-	    
+
         .expence_account input[type="checkbox"] {
             margin-right: 8px; 
-        } 
+        }
+
+        .note-item {
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding: 5px 0;
+            border-bottom: 1px solid #f5f5f578; 
+        }
+
+        .note-item .delete-icon {
+            margin-left: 15px;
+            cursor: pointer;
+            color: #ff4d4d; 
+            filter: brightness(1.2); 
+            text-shadow: 1px 1px 2px #000; 
+            position: absolute;
+            top: 4px;
+            right: 0;
+        }
+
+        .delete-icon {
+            font-size: 15px;
+        }
     </style>
 </head>
 <body>
-    <h1 class="common-styles">Expenses Tracker</h1>
+    <h1 class="common-styles">Expenses Tracker V2</h1>
     <form id="whatsappForm" class="common-styles">
         <div class="expence_account">
             <label for="notes">Expenses:</label>
             <label class="cash-label"><input type="checkbox" name="account" id="cashCheckbox" onclick="selectAccount(this)">Cash</label>
             <label class="bank-label"><input type="checkbox" name="account" id="bankCheckbox" onclick="selectAccount(this)">Online</label>
+            <label class="delete-label"><input type="checkbox" id="showDeleteCheckbox" onclick="toggleDeleteButtons()">Delete</label> 
         </div>
         <div class="instruction">
-		To update cash balance, select "Cash" and enter value in price input. 
-	</div>
-        <input type="text" placeholder="Separate with commas..." id="notes" name="notes">
+            To update cash balance, select "Cash" and enter value in price input.
+        </div>
+        <input type="text" placeholder="Enter notes, separated by commas..." id="notes" name="notes">
         <label for="price">Price:</label>
-        <input type="text" placeholder="Separate with commas..." id="price" name="price" required inputmode="decimal">
+        <input type="text" placeholder="Enter price, separated by commas..." id="price" name="price" required inputmode="decimal">
         <div class="info-container">
             <p id="balanceCash">Cash Bal: RM<span id="cashOnHand">0.00</span></p>
             <div class="buttons-container">
-                <div class="add-button" onclick="addlist()">
+                <div class="button add-button" onclick="addlist()">
                     <i class="fa-solid fa-plus"></i>
                 </div>
-                <div class="save-button" onclick="saveToFile()">
+                <div class="button save-button" onclick="saveToFile()">
                     <i class="fa-regular fa-circle-down"></i>
                 </div>
-                <div class="whatsapp-button" onclick="generateLink()">
+                <div class="button whatsapp-button" onclick="generateLink()">
                     <i class="fab fa-whatsapp"></i>
                 </div>
             </div>
         </div>
         <div id="notesList" class="notes-list hidden">
             <p id="balanceText">Total: RM<span id="totalSpend">0.00</span></p>
+            <p id="balanceCash">Cash Bal: RM<span id="cashOnHand">0.00</span></p> 
         </div>
     </form>
 
-<script>
-    let notesArray = JSON.parse(localStorage.getItem('expenseTracker_notesArray')) || [];
-    let pricesArray = JSON.parse(localStorage.getItem('expenseTracker_pricesArray')) || [];
-    let dateArray = JSON.parse(localStorage.getItem('expenseTracker_dateArray')) || [];
-    let typesArray = JSON.parse(localStorage.getItem('expenseTracker_typesArray')) || [];
-    let cashOnHand = getLocalStorage('cashOnHand', 0);
-    let totalSpend = getLocalStorage('totalSpend', 0);
+    <script>
+        let notesArray = JSON.parse(localStorage.getItem('expenseV2_notesArray')) || [];
+        let pricesArray = JSON.parse(localStorage.getItem('expenseV2_pricesArray')) || [];
+        let dateArray = JSON.parse(localStorage.getItem('expenseV2_dateArray')) || [];
+        let typesArray = JSON.parse(localStorage.getItem('expenseV2_typesArray')) || [];
+        let cashOnHand = getLocalStorage('cashOnHand', 0);
+        let totalSpend = getLocalStorage('totalSpend', 0);
 
-    function toTitleCase(str) {
-        return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    }
-
-    function updateLocalStorage(key, value) {
-        localStorage.setItem('expenseTracker_' + key, JSON.stringify(value));
-    }
-
-    function getLocalStorage(key, defaultValue) {
-        return parseFloat(JSON.parse(localStorage.getItem('expenseTracker_' + key))) || defaultValue;
-    }
-
-    function updateTotalDisplay() {
-        document.getElementById("totalSpend").innerText = totalSpend.toFixed(2);
-        document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
-    }
-
-    function selectAccount(checkbox) {
-        var checkboxes = document.getElementsByName('account');
-        checkboxes.forEach((item) => {
-            if (item !== checkbox) item.checked = false;
-        });
-    }
-
-function addlist() {
-    const notesInput = document.getElementById("notes").value;
-    const pricesInput = document.getElementById("price").value;
-    const cashChecked = document.getElementById("cashCheckbox").checked;
-    const bankChecked = document.getElementById("bankCheckbox").checked;
-
-    if (pricesInput === "") {
-        return;
-    }
-
-    const newPrices = pricesInput.split(',').map(price => parseFloat(price.trim()));
-
-    if (notesInput === "" && cashChecked) {
-        newPrices.forEach(price => {
-            cashOnHand += price;
-        });
-        updateLocalStorage('cashOnHand', cashOnHand);
-        updateTotalDisplay();
-        document.getElementById("price").value = ""; // Clear the price input
-        return; // Return after clearing the input
-    }
-
-    if (notesInput !== "") {
-        const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
-        const currentDate = new Date();
-        const formattedDate = formatDateDMY(currentDate);
-        const noteType = cashChecked ? 'Cash' : 'Bank';
-
-        newNotes.forEach((note, index) => {
-            notesArray.push(note);
-            pricesArray.push(newPrices[index]);
-            dateArray.push(formattedDate);
-            typesArray.push(noteType);
-            if (cashChecked) {
-                cashOnHand -= newPrices[index];
-            }
-            totalSpend += newPrices[index];
-        });
-
-        updateLocalStorage('notesArray', notesArray);
-        updateLocalStorage('pricesArray', pricesArray);
-        updateLocalStorage('dateArray', dateArray);
-        updateLocalStorage('typesArray', typesArray);
-        updateLocalStorage('cashOnHand', cashOnHand);
-        updateLocalStorage('totalSpend', totalSpend);
-
-        updateNotesList();
-        updateTotalDisplay();
-
-        document.getElementById("notes").value = "";
-        document.getElementById("price").value = "";
-    }
-}
-function updateNotesList() {
-    const notesListElem = document.getElementById("notesList");
-
-    if (notesArray.length === 0) {
-        notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
-        notesListElem.classList.add('hidden');
-    } else {
-        notesListElem.innerHTML = notesArray.map((note, index) => {
-            const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for display
-            const noteClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
-            return `<p class="${noteClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>`;
-        }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
-        notesListElem.classList.remove('hidden');
-    }
-    updateTotalDisplay(); // Update the total display after updating the notes list
-}
-
-
-    function formatDateDMY(date) {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    }
-
-    function generateLink() {
-        if (notesArray.length === 0) {
-            return;
+        function toTitleCase(str) {
+            return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
         }
 
-        let message = "";
+        function toggleDeleteButtons() {
+            updateNotesList();
+        }
 
-        notesArray.forEach((note, index) => {
-            const date = dateArray[index].split('/').slice(0, 2).join('/'); // Format to dd/mm for message
-            message += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-        });
+        function updateLocalStorage(key, value) {
+            localStorage.setItem('expenseV2_' + key, JSON.stringify(value));
+        }
 
-        let total = pricesArray.reduce((acc, price) => acc + price, 0);
-        message += `*Total:* RM${total.toFixed(2)}\n`;
+        function getLocalStorage(key, defaultValue) {
+            return parseFloat(JSON.parse(localStorage.getItem('expenseV2_' + key))) || defaultValue;
+        }
 
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
-        window.location.href = whatsappLink;
+        function updateTotalDisplay() {
+            document.getElementById("totalSpend").innerText = totalSpend.toFixed(2);
+            document.getElementById("cashOnHand").innerText = cashOnHand.toFixed(2);
+        }
 
-        // Clear arrays after generating link
-        notesArray = [];
-        pricesArray = [];
-        dateArray = [];
-        typesArray = [];
-        totalSpend = 0;
-        updateLocalStorage('notesArray', notesArray);
-        updateLocalStorage('pricesArray', pricesArray);
-        updateLocalStorage('dateArray', dateArray);
-        updateLocalStorage('typesArray', typesArray);
-        updateLocalStorage('totalSpend', totalSpend);
-        updateNotesList();
-        updateTotalDisplay(); // Ensure the total is updated to reflect the cleared arrays
-    }
+        function selectAccount(checkbox) {
+            var checkboxes = document.getElementsByName('account');
+            checkboxes.forEach((item) => {
+                if (item !== checkbox) item.checked = false;
+            });
+        }
 
-function saveToFile() {
-    if (notesArray.length === 0) {
-        return;
-    }
+        function addlist() {
+            const notesInput = document.getElementById("notes").value;
+            const pricesInput = document.getElementById("price").value;
+            const cashChecked = document.getElementById("cashCheckbox").checked;
+            const bankChecked = document.getElementById("bankCheckbox").checked;
 
-    let content = "";
+            if (pricesInput === "") {
+                return;
+            }
 
-    notesArray.forEach((note, index) => {
-        const date = dateArray[index]; // Use full date for file content
-        const transactionType = typesArray[index];
-        content += `[${date}][${transactionType}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
-    });
+            const totalPrice = pricesInput.split(',').reduce((acc, price) => acc + parseFloat(price.trim()), 0);
 
-    let total = pricesArray.reduce((acc, price) => acc + price, 0);
-    let cashOnHand = getLocalStorage('cashOnHand', 0);
-    content += `Total: RM${total.toFixed(2)}\nCash Balance: RM${cashOnHand.toFixed(2)}`;
+            if (notesInput === "" && cashChecked) {
+                cashOnHand += totalPrice;
+                updateLocalStorage('cashOnHand', cashOnHand);
+                updateTotalDisplay();
+                document.getElementById("price").value = "";
+                return;
+            }
 
-    const blob = new Blob([content], { type: 'text/plain' });
-    const a = document.createElement('a');
-    const firstDate = dateArray[0].split('/').join('');
-    const lastDate = dateArray[dateArray.length - 1].split('/').join('');
-    a.href = URL.createObjectURL(blob);
-    a.download = `Expense_${firstDate}-${lastDate}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-}
+            if (notesInput !== "") {
+                const newNotes = notesInput.split(',').map(note => toTitleCase(note.trim()));
+                const currentDate = new Date();
+                const formattedDate = formatDateDMY(currentDate);
+                const noteType = cashChecked ? 'Cash' : 'Bank';
 
+                newNotes.forEach(note => {
+                    notesArray.push(note);
+                    pricesArray.push(totalPrice);
+                    dateArray.push(formattedDate);
+                    typesArray.push(noteType);
+                    if (cashChecked) {
+                        cashOnHand -= totalPrice;
+                    }
+                    totalSpend += totalPrice;
+                });
 
-    window.onload = function() {
-        cashOnHand = getLocalStorage('cashOnHand', 0);
-        totalSpend = getLocalStorage('totalSpend', 0);
-        updateTotalDisplay();
-        updateNotesList();
-    }
-</script>
+                updateLocalStorage('notesArray', notesArray);
+                updateLocalStorage('pricesArray', pricesArray);
+                updateLocalStorage('dateArray', dateArray);
+                updateLocalStorage('typesArray', typesArray);
+                updateLocalStorage('cashOnHand', cashOnHand);
+                updateLocalStorage('totalSpend', totalSpend);
+
+                updateNotesList();
+                updateTotalDisplay();
+
+                document.getElementById("notes").value = "";
+                document.getElementById("price").value = "";
+            }
+        }
+
+        function updateNotesList() {
+            const notesListElem = document.getElementById("notesList");
+            const showDelete = document.getElementById("showDeleteCheckbox").checked;
+
+            if (notesArray.length === 0) {
+                notesListElem.innerHTML = '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
+                notesListElem.classList.add('hidden');
+            } else {
+                notesListElem.innerHTML = notesArray.map((note, index) => {
+                    const date = dateArray[index].split('/').slice(0, 2).join('/');
+                    const typeClass = typesArray[index] === 'Cash' ? 'cash-note' : 'bank-note';
+                    const bgColorClass = index % 2 === 0 ? 'bg-light' : 'bg-dark';
+                    return `
+                        <div class="note-item ${bgColorClass}">
+                            <p class="${typeClass}">[${date}] RM${pricesArray[index].toFixed(2)}: ${note}</p>
+                            ${showDelete ? '<i class="fa-regular fa-trash-can delete-icon" onclick="deleteEntry(' + index + ')"></i>' : ''}
+                        </div>
+                    `;
+                }).join('') + '<p id="balanceText">Total: RM<span id="totalSpend"></span></p>';
+                notesListElem.classList.remove('hidden');
+            }
+            updateTotalDisplay();
+        }
+
+        function deleteEntry(index) {
+            const deletedPrice = pricesArray[index];
+            const type = typesArray[index];
+
+            notesArray.splice(index, 1);
+            pricesArray.splice(index, 1);
+            dateArray.splice(index, 1);
+            typesArray.splice(index, 1);
+
+            if (type === 'Cash') {
+                cashOnHand += deletedPrice;
+                updateLocalStorage('cashOnHand', cashOnHand);
+            }
+
+            totalSpend -= deletedPrice;
+            updateLocalStorage('totalSpend', totalSpend);
+
+            updateLocalStorage('notesArray', notesArray);
+            updateLocalStorage('pricesArray', pricesArray);
+            updateLocalStorage('dateArray', dateArray);
+            updateLocalStorage('typesArray', typesArray);
+
+            updateNotesList();
+            updateTotalDisplay();
+        }
+
+        function formatDateDMY(date) {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        function generateLink() {
+            if (notesArray.length === 0) {
+                return;
+            }
+
+            let message = "";
+
+            notesArray.forEach((note, index) => {
+                const date = dateArray[index].split('/').slice(0, 2).join('/');
+                message += `[${date}] RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+            });
+
+            let total = pricesArray.reduce((acc, price) => acc + price, 0);
+            message += `*Total:* RM${total.toFixed(2)}\n`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappLink = `whatsapp://send/?text=${encodedMessage}`;
+            window.location.href = whatsappLink;
+
+            notesArray = [];
+            pricesArray = [];
+            dateArray = [];
+            typesArray = [];
+            totalSpend = 0;
+            updateLocalStorage('notesArray', notesArray);
+            updateLocalStorage('pricesArray', pricesArray);
+            updateLocalStorage('dateArray', dateArray);
+            updateLocalStorage('typesArray', typesArray);
+            updateLocalStorage('totalSpend', totalSpend);
+            updateNotesList();
+            updateTotalDisplay();
+        }
+
+        function saveToFile() {
+            if (notesArray.length === 0) {
+                return;
+            }
+
+            let content = "";
+
+            notesArray.forEach((note, index) => {
+                const date = dateArray[index].split('/').slice(0, 2).join('/');
+                const transactionType = typesArray[index];
+                content += `[${date}][${transactionType}]RM${pricesArray[index].toFixed(2)}: ${note}\n`;
+            });
+
+            let total = pricesArray.reduce((acc, price) => acc + price, 0);
+            let cashOnHand = getLocalStorage('cashOnHand', 0);
+            content += `Total: RM${total.toFixed(2)}\nCash Balance: RM${cashOnHand.toFixed(2)}`;
+
+            const blob = new Blob([content], { type: 'text/plain' });
+            const a = document.createElement('a');
+            const firstDate = dateArray[0].split('/').join('');
+            const lastDate = dateArray[dateArray.length - 1].split('/').join('');
+            a.href = URL.createObjectURL(blob);
+            a.download = `Expense_${firstDate}-${lastDate}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        window.onload = function() {
+            cashOnHand = getLocalStorage('cashOnHand', 0);
+            totalSpend = getLocalStorage('totalSpend', 0);
+            updateTotalDisplay();
+            updateNotesList();
+        }
+    </script>
 </body>
 </html>
