@@ -61,6 +61,7 @@
             color: #f5f5f5;
             font-size: 16px;
             outline: none;
+	    transition: border-color 0.8s ease;
         }
 
         .instruction {
@@ -343,8 +344,30 @@ function addlist() {
         document.getElementById("notes").value = "";
         document.getElementById("price").value = "";
     }
+	updateInputBorderColor();
 }
 
+function updateInputBorderColor() {
+    const notesInput = document.getElementById('notes');
+    const priceInput = document.getElementById('price');
+    const cashChecked = document.getElementById('cashCheckbox').checked;
+    const bankChecked = document.getElementById('bankCheckbox').checked;
+
+    if (cashChecked) {
+        notesInput.style.borderBottomColor = '#7efb7e'; // Green for Cash
+        priceInput.style.borderBottomColor = '#7efb7e';
+    } else if (bankChecked) {
+        notesInput.style.borderBottomColor = '#3cceff'; // Blue for Bank
+        priceInput.style.borderBottomColor = '#3cceff';
+    } else {
+        notesInput.style.borderBottomColor = '#f5f5f578'; // Default color
+        priceInput.style.borderBottomColor = '#f5f5f578';
+    }
+}
+
+// Add event listeners to call the updateInputBorderColor function when checkboxes change
+document.getElementById('cashCheckbox').addEventListener('change', updateInputBorderColor);
+document.getElementById('bankCheckbox').addEventListener('change', updateInputBorderColor);
 
 function updateNotesList() {
     const notesListElem = document.getElementById("notesList");
@@ -477,6 +500,7 @@ function saveToFile() {
         totalSpend = getLocalStorage('totalSpend', 0);
         updateTotalDisplay();
         updateNotesList();
+	updateInputBorderColor();
     }
 </script>
 </body>
